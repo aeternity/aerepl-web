@@ -11,13 +11,13 @@
   <body>
     <header>
       <section class="container">
-        <nav role="navigation">
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-          </ul>
-        </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
+          <nav role="navigation">
+              <ul>
+                  <li><a href="https://github.com/aeternity/aerepl/blob/master/README.org">Get Started</a></li>
+              </ul>
+          </nav>
+          <a href="https://github.com/aeternity/aesophia/" class="phx-logo">
+              <img src="<%= Routes.static_path(@conn, "/images/sophia.svg") %>" alt="Sophia"/>
         </a>
       </section>
     </header>

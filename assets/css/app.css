@@ -1,3 +1,28 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+div.repl {
+    font-family: "Lucida Console", Monaco, monospace;
+    white-space: pre;
+    line-height: 1;
+}
+
+div.repl li.in:before {
+    content: '⮚';
+    margin-left: -20px;
+    margin-right: 10px;
+}
+div.repl li.out:before {
+    content: '⮘';
+    margin-left: -20px;
+    margin-right: 10px;
+}
+
+div.repl li.in {
+    list-style:none;
+}
+div.repl li.out {
+    list-style:none;
+    font-weight: bold;
+}

@@ -17,6 +17,7 @@ defmodule AereplHttpWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/nice_message", NiceMessageController, :index
   end
 
   # Other scopes may use custom stacks.
