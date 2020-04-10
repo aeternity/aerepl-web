@@ -3,7 +3,6 @@ defmodule AereplHttpWeb.UserSocket do
 
   ## Channels
   channel "repl_session:*", AereplHttpWeb.ReplSessionChannel
-  transport(:websocket, Phoenix.Transports.WebSocket)
 
   def connect(_params, socket, _connect_info) do
     {:ok, socket}

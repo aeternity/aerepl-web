@@ -43,8 +43,11 @@ defmodule AereplHttp.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:dogma, "~> 0.1", only: [:dev]},
       {:aerepl,
        git: "https://github.com/aeternity/aerepl",
+       tag: "v1.2.1",
        app: false,
        compile: "make aerepl; ./rebar3 compile",
        manager: :make}

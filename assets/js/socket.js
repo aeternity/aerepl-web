@@ -7,8 +7,6 @@ let channel         = socket.channel("repl_session:lobby", {});
 let queryInput      = document.querySelector("#query-input");
 let outputContainer = document.querySelector("#outputs");
 
-var state;
-
 queryInput.addEventListener("keypress", event => {
     if(event.keyCode === 13 && !event.shiftKey){
         let messageItem = document.createElement("li");
@@ -17,7 +15,7 @@ queryInput.addEventListener("keypress", event => {
         outputContainer.appendChild(messageItem);
 
         channel.push("query", {input: queryInput.value.trim(),
-                               state: state
+                               key: key
                               });
         queryInput.value = "";
     }
@@ -25,21 +23,21 @@ queryInput.addEventListener("keypress", event => {
 
 channel.on("response", payload => {
     let messageItem = document.createElement("li");
-    state = payload.state;
+    key = payload.key;
 
-    if(payload.message !== "") {
-        messageItem.innerText = `${payload.message}`;
+    if(payload.output !== "") {
+        messageItem.innerText = `${payload.output}`;
         messageItem.classList.add("out");
         outputContainer.appendChild(messageItem);
     }
 });
 
-channel.onError( () => console.log("Something got wrong...") );
+channel.onError( () => console.log("Aaah, crap. Something has gone wrong.") );
 channel.onClose( () => console.log("The channel has gone away gracefully") );
 
 
 channel.join()
-    .receive("ok", resp => { console.log("Joined successfully"); })
+    .receive("ok", resp => { console.log("Okay, joined successfully"); })
     .receive("error", resp => { console.log("Unable to join", resp); });
 
 export default socket;

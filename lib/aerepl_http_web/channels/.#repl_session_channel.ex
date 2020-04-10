@@ -1,1 +1,0 @@
-radek@archlinux.4749:1586335811

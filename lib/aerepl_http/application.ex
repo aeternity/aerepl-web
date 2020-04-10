@@ -11,9 +11,10 @@ defmodule AereplHttp.Application do
       # Start the Ecto repository
       AereplHttp.Repo,
       # Start the endpoint when the application starts
-      AereplHttpWeb.Endpoint
+      AereplHttpWeb.Endpoint,
       # Starts a worker by calling: AereplHttp.Worker.start_link(arg)
       # {AereplHttp.Worker, arg},
+      {AereplHttp.StateKeeper, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
