@@ -9,7 +9,7 @@ defmodule AereplHttp.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      AereplHttp.Repo,
+      # AereplHttp.Repo,
       # Start the endpoint when the application starts
       AereplHttpWeb.Endpoint,
       # Starts a worker by calling: AereplHttp.Worker.start_link(arg)
