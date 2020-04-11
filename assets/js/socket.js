@@ -21,6 +21,8 @@ queryInput.addEventListener("keypress", event => {
     }
 });
 
+var key = undefined  // FIXME: this is a dignity issue that should be fixed
+
 channel.on("response", payload => {
     let messageItem = document.createElement("li");
     key = payload.key;
