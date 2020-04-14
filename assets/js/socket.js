@@ -21,16 +21,21 @@ queryInput.addEventListener("keypress", event => {
     }
 });
 
-var key = undefined  // FIXME: this is a dignity issue that should be fixed
+var key = undefined;  // FIXME: this is a dignity issue that should be fixed
 
 channel.on("response", payload => {
-    let messageItem = document.createElement("li");
-    key = payload.key;
-
-    if(payload.output !== "") {
-        messageItem.innerText = `${payload.output}`;
-        messageItem.classList.add("out");
-        outputContainer.appendChild(messageItem);
+    if((key === payload.key) || !key /* whatever !key means */){
+        key = payload.key;
+        var msg = payload.output.trimEnd().replace(/^\n|\n$/g, '');
+        if(msg !== "") {
+            let messageItem = document.createElement("li");
+            messageItem.innerText = msg;
+            messageItem.classList.add("out");
+            outputContainer.appendChild(messageItem);
+        }
+    } else {
+        console.log("Invalid key: " + payload.key);
+        console.log("Expected: " + key);
     }
 });
 

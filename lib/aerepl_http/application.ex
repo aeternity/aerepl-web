@@ -14,7 +14,7 @@ defmodule AereplHttp.Application do
       AereplHttpWeb.Endpoint,
       # Starts a worker by calling: AereplHttp.Worker.start_link(arg)
       # {AereplHttp.Worker, arg},
-      {AereplHttp.StateKeeper, %{}}
+      {StateKeeper, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

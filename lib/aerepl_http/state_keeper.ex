@@ -1,10 +1,59 @@
-defmodule AereplHttp.StateKeeper do
+defmodule StateKeeper do
+  @moduledoc """
+  Server side session manager
+  """
   use GenServer
   require Logger
 
-  def add_user(user, states) do
-    st = :aere_repl.init_state()
-    Map.put(states, user, {:state, st})
+  defmodule UserEntry do
+    @moduledoc """
+    Structure containing the server side information about the client
+    """
+    defstruct state: {:repl_state, :aere_repl.init_state}, last_update: DateTime.utc_now
+
+    def expired(%{last_update: t}) do
+      DateTime.diff(DateTime.utc_now, t) > 60 * 60 * 4  # expire after 4h
+    end
+
+    def poke(entry) do
+      %{entry | last_update: DateTime.utc_now}
+    end
+
+    def update(entry = %{state: user_state}, query) do
+      {new_state, msg} =
+        case user_state do
+          {:repl_state, st0} ->
+            resp = :aere_repl.process_string(st0, query)
+            new_state = case resp do
+                          {:repl_response, _, _, {:success, st1}} -> {:repl_state, st1}
+                          {:repl_response, _, _, _}    -> {:repl_state, st0}
+                          {:repl_question, _, _, _, _} -> {:repl_question, st0, resp}
+                        end
+            msg = ReplUtils.render_response(st0, resp)
+            {new_state, msg}
+          {:repl_question, prev_state, quest} ->
+            {answer_status, resp} =
+              :aere_repl.answer(quest, String.to_charlist(String.trim(query)))
+            msg = ReplUtils.render_response(prev_state, resp)
+            case answer_status do
+              :retry ->
+                {{:repl_question, prev_state, resp}, msg}
+              :accept ->
+                {{:repl_state, resp}, msg}
+            end
+        end
+      {poke(%{entry | state: new_state}), msg}
+    end
+  end
+
+
+  def add_user(states, user) do
+      Map.put(states, user, %UserEntry{})
+  end
+
+  def gen_session_id() do
+    raw = :crypto.strong_rand_bytes(256)
+    raw |> Base.url_encode64 |> binary_part(0, 256)
   end
 
   # Client
@@ -13,54 +62,53 @@ defmodule AereplHttp.StateKeeper do
     GenServer.start_link(__MODULE__, default, name: StateKeeper)
   end
 
-  # Callbacks
+  def join() do
+    GenServer.call(StateKeeper, :join)
+  end
 
+  def query(user, query) do
+    GenServer.call(StateKeeper, {:query, user, query})
+  end
+
+  def gc() do
+    GenServer.cast(StateKeeper, :gc)
+  end
+
+  # Callbacks
   @impl true
   def init(states) do
     {:ok, states}
   end
 
   @impl true
-  def handle_call({:join, user}, _from, states) do
-    {:reply, %{
+  def handle_call(:join, _from, states) do
+    key = gen_session_id()
+    {:reply,
+     %{
         "output" => List.to_string(:aere_repl.banner()),
         "warnings" => "",
-        "status" => "success"
-     }, add_user(user, states)}
-  end
-
-  def handle_call({:query, user, query}, _from, states) do
-    states1 = if Map.has_key?(states, user) do states else add_user(user, states) end
-    user_state = Map.get(states, user)
-    {new_state, msg} =
-      case user_state do
-        {:state, st0} ->
-          resp = :aere_repl.process_string(st0, query)
-          new_state = case resp do
-                        {:repl_response, _, _, {:success, st1}} -> {:state, st1}
-                        {:repl_response, _, _, _}    -> {:state, st0}
-                        {:repl_question, _, _, _, _} -> {:question, st0, resp}
-                      end
-          msg = ReplUtils.render_response(st0, resp)
-          {new_state, msg}
-        {:question, prev_state, quest} ->
-          {answer_status, resp} =
-            :aere_repl.answer(quest, String.to_charlist(String.trim(query)))
-          msg = ReplUtils.render_response(prev_state, resp)
-          case answer_status do
-            :retry ->
-              Logger.debug("BADDDd")
-              {{:question, prev_state, resp}, msg}
-            :accept ->
-              Logger.debug("GUTT")
-              {{:state, resp}, msg}
-          end
-      end
-    {:reply, msg, Map.put(states1, user, new_state)}
+        "status" => "success",
+        "key" => key
+     },
+     add_user(states, key)
+    }
   end
 
   @impl true
-  def handle_cast(:gc, state) do
-    {:noreply, state}
+  def handle_call({:query, user, query}, _from, states) do
+    case Map.get(states, user, :undefined) do
+      :undefined ->
+        {:reply, {:error, :no_such_user}, states}
+      entry ->
+        {new_entry, msg} = UserEntry.update(entry, query)
+        {:reply, msg |> Map.put("key", user), states |> Map.put(user, new_entry)}
+    end
+  end
+
+  @impl true
+  def handle_cast(:gc, states) do
+    {:noreply,
+     :maps.filter(fn(_, e) -> not(UserEntry.expired(e)) end, states)
+    }
   end
 end

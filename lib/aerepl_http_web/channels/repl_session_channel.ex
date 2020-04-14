@@ -12,20 +12,24 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
   def handle_in("query", %{"input" => q, "key" => key}, socket) do
-    resp = GenServer.call(StateKeeper, {:query, key, q})
-    push(socket, "response",  Map.put(resp, "key", key))
-    {:reply, :ok, socket}
+    resp = StateKeeper.query(key, q)
+    StateKeeper.gc()
+    case resp do
+      {:error, e} -> handle_error(e, key, socket)
+      _ ->
+        push(socket, "response",  resp)
+        {:reply, :ok, socket}
+    end
   end
 
   def handle_info(:init, socket) do
-    key =
-      :crypto.strong_rand_bytes(256)
-      |> Base.url_encode64
-      |> binary_part(0, 256)
-    Logger.debug("Generated key: " <> key)
+    resp = StateKeeper.join()
+    push(socket, "response", resp)
+    {:noreply, socket}
+  end
 
-    resp = GenServer.call(StateKeeper, {:join, key})
-    push(socket, "response", Map.put(resp, "key", key))
+  def handle_error(:no_such_user, key, socket) do
+    Logger.log("Request from invalid user: " <> inspect key)
     {:noreply, socket}
   end
 
