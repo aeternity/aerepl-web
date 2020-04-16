@@ -9,7 +9,7 @@ To start the HTTP server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-For the usage of the REPL visit [its documentation](https://github.com/aeternity/aerepl**
+For the usage of the REPL visit [its documentation](https://github.com/aeternity/aerepl)
 
 **NOTE:** Because of the old rocksdb used by the node, some commands may need to be used with `CXXFLAGS="-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"` flags. See [this issue](https://github.com/aeternity/aeternity/issues/2846) for reference.
 
