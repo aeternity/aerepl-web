@@ -3,7 +3,6 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   require Logger
   require ReplUtils
 
-
   def join("repl_session:lobby", _payload, socket) do
     send(self(), :init)
     {:ok, socket}
@@ -14,10 +13,13 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   def handle_in("query", %{"input" => q, "key" => key}, socket) do
     resp = StateKeeper.query(key, q)
     StateKeeper.gc()
+
     case resp do
-      {:error, e} -> handle_error(e, key, socket)
+      {:error, e} ->
+        handle_error(e, key, socket)
+
       _ ->
-        push(socket, "response",  resp)
+        push(socket, "response", resp)
         {:reply, :ok, socket}
     end
   end
@@ -29,8 +31,7 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   end
 
   def handle_error(:no_such_user, key, socket) do
-    Logger.log("Request from invalid user: " <> inspect key)
+    Logger.log("Request from invalid user: " <> inspect(key))
     {:noreply, socket}
   end
-
 end
