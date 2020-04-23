@@ -31,7 +31,7 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   end
 
   def handle_error(:no_such_user, key, socket) do
-    Logger.log("Request from invalid user: " <> inspect(key))
+    Logger.error("Request from invalid user: " <> inspect(key))
     {:noreply, socket}
   end
 end
