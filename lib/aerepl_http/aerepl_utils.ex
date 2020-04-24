@@ -1,5 +1,5 @@
 defmodule ReplUtils do
-  def render(state, repl_str), do: List.to_string(:aere_repl.render_msg(state, repl_str))
+  def render(state, repl_str), do: state |> :aere_repl.render_msg(repl_str) |> List.to_string()
 
   def render_response(_, st) when elem(st, 0) == :repl_state,
     do: %{"status" => "success", "output" => "", "warnings" => []}
