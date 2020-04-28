@@ -47,7 +47,8 @@ defmodule AereplHttp.MixProject do
       {:dogma, "~> 0.1", only: [:dev]},
       {:aerepl,
        git: "https://github.com/aeternity/aerepl",
-       tag: "v1.2.1",
+#       tag: "v1.2.1",
+       branch: "master",
        app: false,
        compile: "make aerepl; ./rebar3 compile",
        manager: :make}

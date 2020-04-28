@@ -70,6 +70,10 @@ defmodule StateKeeper do
     GenServer.call(StateKeeper, {:query, user, query})
   end
 
+  def autocomplete(user, query) do
+    GenServer.call(StateKeeper, {:autocomplete, user, query})
+  end
+
   def gc() do
     GenServer.cast(StateKeeper, :gc)
   end
@@ -102,6 +106,29 @@ defmodule StateKeeper do
       entry ->
         {new_entry, msg} = UserEntry.update(entry, query)
         {:reply, msg |> Map.put("key", user), states |> Map.put(user, new_entry)}
+    end
+  end
+
+  @impl true
+  def handle_call({:autocomplete, user, query}, _from, states) do
+    case Map.get(states, user, :undefined) do
+      :undefined ->
+        {:reply, {:error, :no_such_user}, states}
+      %{state: entry_state} ->
+        user_state =
+          case entry_state do
+            {:repl_state, st} -> st
+            {:repl_question, st, _} -> st
+          end
+        typed_ids = :aere_repl.list_names(user_state)
+
+        ids = for {_type, id_erlang} <- typed_ids, do: List.to_string(id_erlang)
+
+        Logger.debug(:io_lib.format("~p\n\n", [ids]))
+        {:reply,
+         %{"names" => (for id <- ids, String.starts_with?(id, query), do: id)},
+         states
+        }
     end
   end
 
