@@ -22,5 +22,6 @@ div.repl li.in {
 }
 div.repl li.out {
     list-style:none;
-    font-weight: bold;
+    font-weight: 900;
+    color: #EE306F;
 }

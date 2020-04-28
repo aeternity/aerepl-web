@@ -26,6 +26,9 @@ Basic usage:
         like <code>:t 2 + 2</code>
     </li>
 
+    <li>
+        For the autocompletion press <code>ctrl</code> + <code>space</code>
+    </li>
 
     <li>
         You can import standard library files by the standard <code>include</code> directive, or the
