@@ -3,9 +3,61 @@ Type some Sophia here!
 
 <div class="repl">
     <div id="outputs"></div>
-    <textarea id="query-input"></textarea>
+    <textarea id="query-input" list="autocompletion" autocomplete="off" rows="1"></textarea>
+    <datalist id="autocompletion">
+    </datalist>
 </div>
 
 <sub>
     (Note, this is a very alpha version. Treat it more like a toy)
 </sub>
+
+<hr>
+
+Basic usage:
+
+<ul>
+    <li>
+        Type some expression, like <code>2 + 2</code>. You should get the <code>4</code> answer
+    </li>
+
+    <li>
+        To check the type of some value, prepend the query with <code>:t</code>, 
+        like <code>:t 2 + 2</code>
+    </li>
+
+    <li>
+        For the autocompletion press <code>ctrl</code> + <code>space</code>
+    </li>
+
+    <li>
+        If you want to insert new line without sending the query use <code>shift</code> + <code>enter</code>
+    </li>
+
+    <li>
+        You can import standard library files by the standard <code>include</code> directive, or the
+        <code>:include</code> command. Try <code>include "List.aes"</code> or <code>:include List.aes</code>
+    </li>
+
+    <li>
+        Define values, functions and types like you would normally do in Sophia:
+        <ul>
+            <li> <code> let x = 2 </code> </li>
+            <li> <code> function f(y) = x + y </code> </li>
+            <li> <code> type endomorphism('a) = ('a) => 'a </code> </li>
+            <li> <code> record anti_bool = {true : unit, false : unit} </code> </li>
+        </ul>
+    </li>
+
+    <li>
+        REPL commands (these you prepend with <code>:</code>) can be usually shortened, so <code>:include</code>
+        means the same as <code>:inc</code>
+    </li>
+
+
+    <li>
+        The REPL is currently not connected to any public network, so it won't be able to interact with any real contracts.
+        It also doesn't store any history, so you may want to backup your session manually.
+    </li>
+
+</ul>

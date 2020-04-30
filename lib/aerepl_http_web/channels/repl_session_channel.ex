@@ -8,8 +8,6 @@ defmodule AereplHttpWeb.ReplSessionChannel do
     {:ok, socket}
   end
 
-  # Channels can be used in a request/response fashion
-  # by sending replies to requests from the client
   def handle_in("query", %{"input" => q, "key" => key}, socket) do
     resp = StateKeeper.query(key, q)
     StateKeeper.gc()
@@ -22,6 +20,11 @@ defmodule AereplHttpWeb.ReplSessionChannel do
         push(socket, "response", resp)
         {:reply, :ok, socket}
     end
+  end
+  def handle_in("autocomplete", %{"input" => input, "key" => key}, socket) do
+    resp = StateKeeper.autocomplete(key, input)
+    push(socket, "autocomplete",  resp)
+    {:reply, :ok, socket}
   end
 
   def handle_info(:init, socket) do
