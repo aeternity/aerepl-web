@@ -11,13 +11,9 @@ defmodule StateKeeper do
 
   def query(user, query), do: GenServer.call(__MODULE__, {:query, user, query})
 
+  def autocomplete(user, query), do: GenServer.call(__MODULE__, {:autocomplete, user, query})
+
   def gc(), do: GenServer.cast(__MODULE__, :gc)
-
-  def query(user, query), do:
-    GenServer.call(StateKeeper, {:query, user, query})
-
-  def autocomplete(user, query), do:
-    GenServer.call(StateKeeper, {:autocomplete, user, query})
 
   def init(state), do: {:ok, state}
 
@@ -48,23 +44,21 @@ defmodule StateKeeper do
     case Map.get(states, user, :undefined) do
       :undefined ->
         {:reply, {:error, :no_such_user}, states}
+
       %{state: entry_state} ->
         user_state =
           case entry_state do
             {:repl_state, st} -> st
             {:repl_question, st, _} -> st
           end
+
         typed_ids = :aere_repl.list_names(user_state)
 
         ids = for {_type, id_erlang} <- typed_ids, do: List.to_string(id_erlang)
 
-        {:reply,
-         %{"names" => (for id <- ids, String.starts_with?(id, query), do: id)},
-         states
-        }
+        {:reply, %{"names" => for(id <- ids, String.starts_with?(id, query), do: id)}, states}
     end
   end
-
 
   def handle_cast(:gc, state),
     do: {:noreply, :maps.filter(fn _, e -> not UserEntry.expired(e) end, state)}
@@ -73,5 +67,4 @@ defmodule StateKeeper do
 
   defp gen_session_id(),
     do: 256 |> :crypto.strong_rand_bytes() |> Base.url_encode64() |> binary_part(0, 256)
-
 end

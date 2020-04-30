@@ -21,9 +21,10 @@ defmodule AereplHttpWeb.ReplSessionChannel do
         {:reply, :ok, socket}
     end
   end
+
   def handle_in("autocomplete", %{"input" => input, "key" => key}, socket) do
     resp = StateKeeper.autocomplete(key, input)
-    push(socket, "autocomplete",  resp)
+    push(socket, "autocomplete", resp)
     {:reply, :ok, socket}
   end
 
