@@ -31,6 +31,10 @@ Basic usage:
     </li>
 
     <li>
+        If you want to insert new line without sending the query use <code>shift</code> + <code>enter</code>
+    </li>
+
+    <li>
         You can import standard library files by the standard <code>include</code> directive, or the
         <code>:include</code> command. Try <code>include "List.aes"</code> or <code>:include List.aes</code>
     </li>
