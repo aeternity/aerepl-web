@@ -1,27 +1,59 @@
 @import "./phoenix.css";
 
-div.repl {
+
+
+
+#autocompletion-block {
+    /* height: 100%; /\* Full-height: remove this if you want "auto" height *\/ */
+    max-width: 200px; /* Set the width of the sidebar */
+    /* position: fixed; /\* Fixed Sidebar (stay in place on scroll) *\/ */
+    z-index: 1; /* Stay on top */
+    /* top: 0; /\* Stay at the top *\/ */
+    left: 0;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+
+    border-color: #333;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 6px;
+
+}
+
+#completion-list li:hover {
+    color: #EE306F;
+}
+
+#main-block {
+    padding-left: 30px;
+}
+
+
+.code {
     font-family: "Lucida Console", Monaco, monospace;
-    white-space: pre;
+    white-space: pre-wrap;
     line-height: 1;
 }
 
-div.repl li.in:before {
+.code li.in:before {
     content: '⮚';
     margin-left: -20px;
     margin-right: 10px;
 }
-div.repl li.out:before {
+.code li.out:before {
     content: '⮘';
     margin-left: -20px;
     margin-right: 10px;
 }
 
-div.repl li.in {
+.code li.in {
     list-style:none;
 }
-div.repl li.out {
+.code li.out {
     list-style:none;
     font-weight: 900;
     color: #EE306F;
+}
+
+.code #query-input {
 }

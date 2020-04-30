@@ -1,3 +1,6 @@
+// NOTE: THIS WAS NOT WRITTEN BY A FRONTEND DEVELOPER
+// DON'T JUDGE ME
+
 import {Socket} from "phoenix";
 
 let socket = new Socket("/socket", {params: {token: window.userToken}});
@@ -6,6 +9,7 @@ socket.connect();
 let channel         = socket.channel("repl_session:lobby", {});
 let queryInput      = document.querySelector("#query-input");
 let outputContainer = document.querySelector("#outputs");
+let completionContainer = document.querySelector("#completion-list");
 
 var inputBufferBackup = null;
 var inputBufferNamePointer = null;
@@ -20,6 +24,46 @@ function isIdChar(c) {
         || (c >= 'a' && c <= 'z')
         || (c >= 'A' && c <= 'Z');
 }
+
+function backupBuffer(trim) {
+    inputBufferBackup = queryInput.value;
+    inputBufferNamePointer = queryInput.selectionStart;
+    inputBufferNameBackPointer = trim.backId;
+}
+
+function reloadCompletionList() {
+    while (completionContainer.firstChild) {
+        completionContainer.removeChild(completionContainer.lastChild);
+    }
+    if(autocompletionList != null) {
+        if(inputBufferBackup === null) {
+            let trim = trimForAutocomplete(queryInput.value, queryInput.selectionStart);
+            backupBuffer(trim);
+        }
+
+        for(var i = 0; i < autocompletionList.length; i+=1) {
+            let completionItem = document.createElement("li");
+            let i_forever = i;  // yeah, imperative language
+            completionItem.innerText = autocompletionList[i];
+
+            completionItem.onclick = function() {
+                replaceWithCompletion(i_forever);
+            };
+
+            completionContainer.appendChild(completionItem);
+        }
+    }
+}
+
+function replaceWithCompletion(autocompletionId) {
+    let before = inputBufferBackup.substring(0, inputBufferNameBackPointer);
+    let after = inputBufferBackup.substring(inputBufferNamePointer, inputBufferBackup.length);
+
+    queryInput.value = before + autocompletionList[autocompletionId] + after;
+    event.target.selectionStart = (before + autocompletionList[autocompletionId]).length;
+    event.target.selectionEnd = event.target.selectionStart;
+}
+
 
 function trimForAutocomplete(input, pos) {
     var backId = pos;
@@ -58,35 +102,30 @@ queryInput.addEventListener("keypress", event => {
         inputBufferBackup = null;
         inputBufferNamePointer = null;
         inputBufferNameBackPointer = null;
+        reloadCompletionList();
     }
 });
 
 queryInput.addEventListener("keyup", event => {
-    let trim = trimForAutocomplete(queryInput.value, event.target.selectionStart);
+    let trim = trimForAutocomplete(queryInput.value, queryInput.selectionStart);
 
     if(event.keyCode === 32 && event.ctrlKey) {
         if(autocompletionId >= 0 && autocompletionId < autocompletionList.length) {
             if(inputBufferBackup === null) {
-                inputBufferBackup = queryInput.value;
-                inputBufferNamePointer = event.target.selectionStart;
-                inputBufferNameBackPointer = trim.backId;
+                backupBuffer(trim);
             }
 
             autocompletionId += 1;
             autocompletionId %= autocompletionList.length;
 
-            let before = inputBufferBackup.substring(0, inputBufferNameBackPointer);
-            let after = inputBufferBackup.substring(inputBufferNamePointer, inputBufferBackup.length);
-
-            queryInput.value = before + autocompletionList[autocompletionId] + after;
-            event.target.selectionStart = (before + autocompletionList[autocompletionId]).length;
-            event.target.selectionEnd = event.target.selectionStart;
+            replaceWithCompletion(autocompletionId);
         }
     } else {
         if(event.keyCode != 17) { // control
             inputBufferBackup = null;
             inputBufferNamePointer = null;
             inputBufferNameBackPointer = null;
+            reloadCompletionList();
 
             channel.push("autocomplete", {input: trim.name, key: key});
         }
@@ -114,6 +153,7 @@ channel.on("response", payload => {
 channel.on("autocomplete", payload => {
     autocompletionId = 0;
     autocompletionList = payload.names;
+    reloadCompletionList();
 });
 
 channel.onError( () => console.log("Aaah, crap. Something has gone wrong with the channel.") );
