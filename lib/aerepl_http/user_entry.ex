@@ -58,6 +58,7 @@ defmodule UserEntry do
       _ ->
         name1 = case name do
                   :none -> :none
+                  :nil -> :none
                   _ -> String.to_charlist(name)
                 end
 
