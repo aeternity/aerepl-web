@@ -23,32 +23,36 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN useradd --shell /bin/bash aeternity -m \
-    && chown -R aeternity:aeternity /home/aeternity
-# Switch to non-root user
-USER aeternity
 ENV SHELL /bin/bash
 
-WORKDIR /home/aeternity/
-RUN git clone https://github.com/aeternity/aerepl_http.git
-WORKDIR /home/aeternity/aerepl_http
+ADD . /app
 
-WORKDIR /home/aeternity/aerepl_http
-ENV ERL_LIBS=$ERL_LIBS:/home/aeternity/aerepl_http/deps/aerepl/_build/default/lib
+WORKDIR /app
+RUN mix local.rebar --force \
+    && mix local.hex --force \
+    && mix deps.get \
+    && mix deps.compile
 
-RUN mix local.rebar --force
-RUN yes | mix deps.get
-RUN CXXFLAGS="-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move" mix deps.compile
+WORKDIR /app/assets
+RUN NODE_ENV=production \
+    && npm install \
+    && npm run deploy \
+    && cd /app && mix phx.digest
 
-WORKDIR /home/aeternity/aerepl_http/assets
-RUN npm install
-WORKDIR /home/aeternity/aerepl_http
+WORKDIR /app
+RUN export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/default/lib \
+    && export SECRET_KEY_BASE=$(mix phx.gen.secret) \
+    && MIX_ENV=prod mix release
 
-CMD export ERL_LIBS=$ERL_LIBS:/home/aeternity/aerepl_http/deps/aerepl/_build/default/lib
-CMD mix phx.server
+# Once the prod release is fixed, this CMD should be replaced with the one below, using the release
+WORKDIR /app
+CMD export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/default/lib \
+    && export SECRET_KEY_BASE=$(mix phx.gen.secret) \
+    && MIX_ENV=prod mix phx.server
+
+# CMD _build/prod/rel/aerepl_http/bin/aerepl_http start
 
 # Erl handle SIGQUIT instead of the default SIGINT
 STOPSIGNAL SIGQUIT
 
 EXPOSE 4000
-EXPOSE 22
