@@ -21,9 +21,14 @@
                     <button type="button" class="column" id="new-line">new line</button>
                 </div>
 
+
+                <h4>Local contract editor</h3>
                 <div id="contract-editor">
-                    <textarea id="query-input" autocomplete="off"></textarea>
-                    <button type="button" id="deploy">deploy</button>
+                    <textarea id="contract-code" autocomplete="off"></textarea>
+                    <div class="row">
+                        <input class="column" type="text" id="contract-name" placeholder="Variable name">
+                        <button class="column" type="button" id="deploy">deploy</button>
+                    </div>
                 </div>
             </div>
         </div>

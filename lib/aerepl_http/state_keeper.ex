@@ -13,6 +13,8 @@ defmodule StateKeeper do
 
   def autocomplete(user, query), do: GenServer.call(__MODULE__, {:autocomplete, user, query})
 
+  def deploy(user, code, name), do: GenServer.call(__MODULE__, {:deploy, user, code, name})
+
   def gc(), do: GenServer.cast(__MODULE__, :gc)
 
   def init(state), do: {:ok, state}
@@ -40,10 +42,10 @@ defmodule StateKeeper do
     end
   end
 
-  def handle_call({:autocomplete, user, query}, _from, states) do
-    case Map.get(states, user, :undefined) do
+  def handle_call({:autocomplete, user, query}, _from, state) do
+    case Map.get(state, user, :undefined) do
       :undefined ->
-        {:reply, {:error, :no_such_user}, states}
+        {:reply, {:error, :no_such_user}, state}
 
       %{state: entry_state} ->
         user_state =
@@ -56,7 +58,17 @@ defmodule StateKeeper do
 
         ids = for {_type, id_erlang} <- typed_ids, do: List.to_string(id_erlang)
 
-        {:reply, %{"names" => for(id <- ids, String.starts_with?(id, query), do: id)}, states}
+        {:reply, %{"names" => for(id <- ids, String.starts_with?(id, query), do: id)}, state}
+    end
+  end
+
+  def handle_call({:deploy, user, code, name}, _from, state) do
+    case Map.get(state, user, :undefined) do
+      :undefined ->
+        {:reply, {:error, :no_such_user}, state}
+      entry ->
+        {new_entry, msg} = UserEntry.deploy(entry, code, name)
+        {:reply, Map.put(msg, "key", user), Map.put(state, user, new_entry)}
     end
   end
 

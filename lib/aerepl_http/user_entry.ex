@@ -2,7 +2,7 @@ defmodule UserEntry do
   @moduledoc """
   Structure containing the server side information about the client
   """
-  defstruct state: {:repl_state, :aere_repl.init_state()}, last_update: DateTime.utc_now()
+  defstruct state: {:repl_state, ReplUtils.init_state()}, last_update: DateTime.utc_now()
 
   def expired(%{last_update: t}) do
     # expire after 4h
@@ -14,12 +14,7 @@ defmodule UserEntry do
   def update(%{state: {:repl_state, st0}} = entry, query) do
     resp = :aere_repl.process_string(st0, query)
 
-    new_state =
-      case resp do
-        {:repl_response, _, _, {:success, st1}} -> {:repl_state, st1}
-        {:repl_response, _, _, _} -> {:repl_state, st0}
-        {:repl_question, _, _, _, _} -> {:repl_question, st0, resp}
-      end
+    new_state = ReplUtils.state_from_response(st0, resp)
 
     msg = ReplUtils.render_response(st0, resp)
 
@@ -35,11 +30,43 @@ defmodule UserEntry do
       case answer_status do
         :retry ->
           {:repl_question, prev_state, resp}
-
         :accept ->
           {:repl_state, resp}
       end
 
     {poke(%{entry | state: new_state}), msg}
+  end
+
+
+  def deploy(%{state: {:repl_question, _, _}} = entry, _, _) do
+    {poke(entry), %{
+        "status" => :error,
+        "output" => "Cannot deploy a contract while answering the question",
+        "warnings" => []
+     }
+    }
+  end
+
+  def deploy(%{state: {:repl_state, st0}} = entry, code, name) do
+    case String.trim(code) do
+      "" -> {poke(entry), %{
+                "status" => :error,
+                "output" => "Contract is empty",
+                "warnings" => []
+             }
+            }
+      _ ->
+        name1 = case name do
+                  :none -> :none
+                  _ -> String.to_charlist(name)
+                end
+
+        resp = :aere_repl.to_response(st0, fn () -> :aere_repl.register_tracked_contract(st0, name1, code) end)
+        new_state = ReplUtils.state_from_response(st0, resp)
+
+        msg = ReplUtils.render_response(st0, resp)
+
+        {poke(%{entry | state: new_state}), msg}
+    end
   end
 end

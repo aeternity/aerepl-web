@@ -28,6 +28,13 @@ defmodule AereplHttpWeb.ReplSessionChannel do
     {:reply, :ok, socket}
   end
 
+  def handle_in("deploy", req = %{"code" => code, "key" => key}, socket) do
+    name = Map.get(req, "name", :none)
+    resp = StateKeeper.deploy(key, code, name)
+    push(socket, "response", resp)
+    {:reply, :ok, socket}
+  end
+
   def handle_info(:init, socket) do
     resp = StateKeeper.join()
     push(socket, "response", resp)

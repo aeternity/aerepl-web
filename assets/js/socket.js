@@ -6,15 +6,20 @@ import {Socket} from "phoenix";
 let socket = new Socket("/socket", {params: {token: window.userToken}});
 socket.connect();
 
-let channel         = socket.channel("repl_session:lobby", {});
+let channel = socket.channel("repl_session:lobby", {});
 
-let queryInput      = document.getElementById("query-input");
-let outputContainer = document.getElementById("outputs");
+
+let queryInput          = document.getElementById("query-input");
+let outputContainer     = document.getElementById("outputs");
 let completionContainer = document.getElementById("completion-list");
 
-let autocompleteButton = document.getElementById("autocomplete");
-let newlineButton = document.getElementById("new-line");
-let submitButton = document.getElementById("submit");
+let autocompleteButton  = document.getElementById("autocomplete");
+let newlineButton       = document.getElementById("new-line");
+let submitButton        = document.getElementById("submit");
+
+let deployButton        = document.getElementById("deploy");
+let contractName        = document.getElementById("contract-name");
+let contractCode        = document.getElementById("contract-code");
 
 
 var inputBufferBackup = null;
@@ -127,9 +132,22 @@ function submitQuery() {
     queryInput.value = "";
 }
 
+function deployContract() {
+    let code = contractCode.value;
+    let name = contractName.value;
+    let payload = {code: code, key: key};
+    if(name != "") {
+        payload.name = name;
+    }
+    channel.push("deploy", payload);
+}
+
+
 autocompleteButton.addEventListener('click', tryAutocomplete, false);
 newlineButton.addEventListener('click', insertNewLine, false);
 submitButton.addEventListener('click', submitQuery, false);
+
+deployButton.addEventListener('click', deployContract, false);
 
 queryInput.addEventListener("keypress", event => {
     if(event.keyCode === 13 && !event.shiftKey){
