@@ -1,7 +1,7 @@
 # AEREPL HTTP
 
 ## Description
-**AEREPL HTTP** is a simple web application, which provides an interface to [AEREPL](https://github.com/aeternity/aerepl), which stands for [Read Execute Eval Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop), which allows executing [Æternity Sophia Smart Contract Language](https://github.com/aeternity/aesophia/blob/lima/docs/sophia.md) in an interactive way.
+**AEREPL HTTP** is a simple web application, which provides an interface to [AEREPL](https://github.com/aeternity/aerepl), which stands for [Read Eval Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop), which allows executing [Æternity Sophia Smart Contract Language](https://github.com/aeternity/aesophia/blob/lima/docs/sophia.md) in an interactive way.
 
 ## Setup
 
