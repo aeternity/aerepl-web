@@ -7,9 +7,15 @@ let socket = new Socket("/socket", {params: {token: window.userToken}});
 socket.connect();
 
 let channel         = socket.channel("repl_session:lobby", {});
-let queryInput      = document.querySelector("#query-input");
-let outputContainer = document.querySelector("#outputs");
-let completionContainer = document.querySelector("#completion-list");
+
+let queryInput      = document.getElementById("query-input");
+let outputContainer = document.getElementById("outputs");
+let completionContainer = document.getElementById("completion-list");
+
+let autocompleteButton = document.getElementById("autocomplete");
+let newlineButton = document.getElementById("new-line");
+let submitButton = document.getElementById("submit");
+
 
 var inputBufferBackup = null;
 var inputBufferNamePointer = null;
@@ -21,6 +27,7 @@ var autocompletionList = [];
 function isIdChar(c) {
     return c == '.'
         || c == '_'
+        || (c >= '0' && c <= '9')
         || (c >= 'a' && c <= 'z')
         || (c >= 'A' && c <= 'Z');
 }
@@ -64,6 +71,16 @@ function replaceWithCompletion(autocompletionId) {
     event.target.selectionEnd = event.target.selectionStart;
 }
 
+function insertNewLine() {
+    let pos = queryInput.selectionStart;
+    let input = queryInput.value;
+    let left = input.substr(0, pos);
+    let right = input.substr(pos, input.length);
+    input = left + '\n' + right;
+    queryInput.value = input;
+    queryInput.focus();
+}
+
 
 function trimForAutocomplete(input, pos) {
     var backId = pos;
@@ -85,17 +102,38 @@ function trimForAutocomplete(input, pos) {
     return {name: input.substring(backId, pos), backId: backId};
 }
 
+function tryAutocomplete() {
+    if(autocompletionId >= 0 && autocompletionId < autocompletionList.length) {
+        if(inputBufferBackup === null) {
+            backupBuffer(trim);
+        }
+        autocompletionId += 1;
+        autocompletionId %= autocompletionList.length;
+
+        replaceWithCompletion(autocompletionId);
+    }
+    queryInput.focus();
+}
+
+function submitQuery() {
+    let messageItem = document.createElement("li");
+    messageItem.innerText = `${queryInput.value}`;
+    messageItem.classList.add("in");
+    outputContainer.appendChild(messageItem);
+
+    channel.push("query", {input: queryInput.value.trim(),
+                           key: key
+                          });
+    queryInput.value = "";
+}
+
+autocompleteButton.addEventListener('click', tryAutocomplete, false);
+newlineButton.addEventListener('click', insertNewLine, false);
+submitButton.addEventListener('click', submitQuery, false);
+
 queryInput.addEventListener("keypress", event => {
     if(event.keyCode === 13 && !event.shiftKey){
-        let messageItem = document.createElement("li");
-        messageItem.innerText = `${queryInput.value}`;
-        messageItem.classList.add("in");
-        outputContainer.appendChild(messageItem);
-
-        channel.push("query", {input: queryInput.value.trim(),
-                               key: key
-                              });
-        queryInput.value = "";
+        submitQuery();
     }
 
     if(!event.ctrlKey) {
@@ -110,16 +148,7 @@ queryInput.addEventListener("keyup", event => {
     let trim = trimForAutocomplete(queryInput.value, queryInput.selectionStart);
 
     if(event.keyCode === 32 && event.ctrlKey) {
-        if(autocompletionId >= 0 && autocompletionId < autocompletionList.length) {
-            if(inputBufferBackup === null) {
-                backupBuffer(trim);
-            }
-
-            autocompletionId += 1;
-            autocompletionId %= autocompletionList.length;
-
-            replaceWithCompletion(autocompletionId);
-        }
+        tryAutocomplete();
     } else {
         if(event.keyCode != 17) { // control
             inputBufferBackup = null;

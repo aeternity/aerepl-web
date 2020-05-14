@@ -1,7 +1,24 @@
 @import "./phoenix.css";
 
 
+@media screen and (max-width: 600px) {
+    .pc-only {
+        display: none !important;
+    }
 
+
+    .code {
+        font-family: "Lucida Console", Monaco, monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+        line-height: 1;
+    }
+}
+@media not (screen and (max-width: 600px)) {
+    .phone-only {
+        display: none !important;
+    }
+}
 
 #autocompletion-block {
     /* height: 100%; /\* Full-height: remove this if you want "auto" height *\/ */

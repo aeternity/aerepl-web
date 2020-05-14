@@ -1,10 +1,9 @@
 <div class="row">
 
-    <div class="column" id="autocompletion-block">
+    <div class="pc-only column" id="autocompletion-block">
         Possible completions:
         <hr>
-        <ul id="completion-list">
-        </ul>
+        <ul id="completion-list"></ul>
     </div>
 
     <div class="column" id="main-block">
@@ -15,9 +14,17 @@
 
             <div>
                 <textarea id="query-input" autocomplete="off" rows="1"></textarea>
-                <sub>
-                    (Note, this is a very alpha version. Treat it more like a toy)
-                </sub>
+
+                <div id="buttons" class="row phone-only">
+                    <button type="button" class="column" id="autocomplete">autocomplete</button>
+                    <button type="button" class="column" id="submit">submit</button>
+                    <button type="button" class="column" id="new-line">new line</button>
+                </div>
+
+                <div id="contract-editor">
+                    <textarea id="query-input" autocomplete="off"></textarea>
+                    <button type="button" id="deploy">deploy</button>
+                </div>
             </div>
         </div>
 
@@ -35,12 +42,20 @@
                 like <code>:t 2 + 2</code>
             </li>
 
-            <li>
+            <li class="pc-only">
                 For the autocompletion press <code>ctrl</code> + <code>space</code>
             </li>
 
-            <li>
+            <li class="phone-only">
+                For the autocompletion press the <code>autocomplete</code> button
+            </li>
+
+            <li class="pc-only">
                 If you want to insert new line without sending the query use <code>shift</code> + <code>enter</code>
+            </li>
+
+            <li class="phone-only">
+                If you want to insert new line without sending the query use the <code>new line</code> button
             </li>
 
             <li>
@@ -73,3 +88,9 @@
 
     </div>
 </div>
+
+
+<p>
+<sub> (Note, this is a beta version. Treat it more like a toy) </sub>
+</p>
+<sup><sup>Support the creator: ak_n84pX8BJsthdZ6XHfki8vSFZsV5EaZjCPCX9iBQ8xRYeefGRo</sup></sup>
