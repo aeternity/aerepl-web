@@ -25,35 +25,136 @@ mix phx.server
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+## Connection
+
+To communicate with the server you will need to use channels provided by Phoenix Framework.
+The connection is bound to a session on the server side where the REPL's state is kept.
+Example of usage can be seen in the `assets/js/socket.js`.
+
+**Every session will automatically die if not used for 4 hours.**
+
+
+### Example setup
+
+Import the necessary dependency:
+```
+import {Socket} from "phoenix";
+```
+
+To open the channel you will need to join the `repl_session` lobby:
+```
+let channel = socket.channel("repl_session:lobby", {});
+```
+
+Then register the callback for incoming messages:
+```
+channel.on(/*reponse type*/, payload => {
+    ...
+});
+```
+
+It may be good to register several additional handlers:
+```
+channel.onError( () => console.log("Error") );
+channel.onClose( () => console.log("Successful close") );
+
+
+channel.join()
+    .receive("ok", resp => { console.log("Joined successfully"); })
+    .receive("error", resp => { console.log("Unable to join", resp); });
+```
+
+To push a message to a channel use the `push` method:
+
+```
+channel.push(/*message type*/, /*payload*/);
+```
+
 ## Protocol
 
-To communicate with the server you will need to use channels provided by Phoenix. Example of usage can be seen in the `assets/js/socket.js`.
+The server receives three types of messages: `query`, `autocomplete` and `deploy`,
+and responds with either `response` or `autocomplete`.
+To ensure the integrity it will provide the key of the session. The client will need to attach
+it to every message to make the server recogize them.
 
-The server awaits for incoming connections and assigns a session key to each user. Each response from the server is in the JSON format:
-```
-{
-  "key" : string
-  "output" : string
-  "status" : "success"|"error"|"internal_error"|"ask"
-}
-```
-Where:
- - `key` describes the session key /TODO: should be a cookie actually/
- - `output` is the message to be printed out
- - `status` tells the type of the response:
-   - `success` is a regular output with successful outcome
-   - `error` means the query wasn't processed at all because of some mistake on the user side. This includes for example type errors, bad syntax, misusing the REPL features etc.
-   - `internal error` is the error on the REPL side. The output will probably contain the REPL stacktrace which will be a valuable information if reported to the developers.
-   - `ask` indicates that the REPL has asked a question. It should provide the information about valid answers and the default option in the `output` field. If the user replies with empty input the default option will be chosen. If the input won't match with any of the options the question will be re-asked.
-   
+### Sent by the client
 
-The query payload is described by the following structure:
+#### query
+
+Describes a regular REPL query, like `2 + 2` or `:t 24`. The payload consists of:
 ```
 {
   "key" : string
   "input" : string
 }
 ```
-The `key` must match the key of the session provided by server. `input` contains the text of the user query.
+`input` contains the plaintext of the user query.
 
-**Every session will automatically die if not used for 4 hours.**
+The `key` must match the key of the session provided by server.
+
+#### autocomplete
+
+Asks the REPL for possible completions of the word. The REPL will reply with `autocomplete` response 
+containing list of matching identifiers. The structure is the same as in `query`:
+```
+{
+  "key" : string
+  "input" : string
+}
+```
+`input` contains the prefix of some identifier candidate.
+
+The `key` must match the key of the session provided by server.
+
+#### deploy
+
+Deploys the contract in a REPL-local environment. It will be accessible under the variable
+provided in the `name` value. If it is not specified, the REPL will generate some reasonable 
+name basing on the contract typename avoiding name conflicts.
+```
+{
+  "key" : string
+  "code" : string
+  "name" : string | null | no value
+}
+```
+`code` contains plaintext source code of the contract. It may contain namespaces, 
+import standard libraries and use stateful functions. Currently there is no support
+for deploy arguments.
+
+Note that this message will be rejected if the REPL is in the "question mode".
+
+The `key` must match the key of the session provided by server.
+
+
+### Sent by the server
+
+#### reponse
+
+Regular reponse that is supposed to be displayed as the output.
+The first (actually, every) response will contain `key` value that will be treated as the
+session identifier. The structure of payload goes as follows:
+```
+{
+  "key" : string
+  "output" : string
+  "status" : "success"|"error"|"internal_error"|"ask"
+  "warnings" : [string]
+}
+```
+Where:
+ - `key` describes the session key
+ - `output` is the message to be printed out
+ - `status` tells the type of the response:
+   - `success` is a regular output with successful outcome
+   - `error` means the query wasn't processed at all because of some mistake on the user side. This includes for example type errors, bad syntax, misusing the REPL features etc.
+   - `internal error` is the error on the REPL side.
+   - `ask` indicates that the REPL has asked a question. It should provide the information about valid answers in the `output` field. If the user replies with empty input the default option will be chosen. If the input won't match with any of the options the question will be re-asked. While REPL is awaiting for the answer it will reject all deploy queries.
+ - `warnings` is a list of warnings that appeared during query evaluation
+   
+
+#### autocomplete
+
+Provides the list of identifiers that matched the input of the last `autocomplete` client message.
+The payload will contain only a single field `names` with a list of strings describing possible
+alternatives.
