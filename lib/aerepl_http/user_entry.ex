@@ -30,6 +30,7 @@ defmodule UserEntry do
       case answer_status do
         :retry ->
           {:repl_question, prev_state, resp}
+
         :accept ->
           {:repl_state, resp}
       end
@@ -37,32 +38,38 @@ defmodule UserEntry do
     {poke(%{entry | state: new_state}), msg}
   end
 
-
   def deploy(%{state: {:repl_question, _, _}} = entry, _, _) do
-    {poke(entry), %{
-        "status" => :error,
-        "output" => "Cannot deploy a contract while answering the question",
-        "warnings" => []
-     }
-    }
+    {poke(entry),
+     %{
+       "status" => :error,
+       "output" => "Cannot deploy a contract while answering the question",
+       "warnings" => []
+     }}
   end
 
   def deploy(%{state: {:repl_state, st0}} = entry, code, name) do
     case String.trim(code) do
-      "" -> {poke(entry), %{
-                "status" => :error,
-                "output" => "Contract is empty",
-                "warnings" => []
-             }
-            }
-      _ ->
-        name1 = case name do
-                  :none -> :none
-                  :nil -> :none
-                  _ when is_binary(name) -> String.to_charlist(name)
-                end
+      "" ->
+        {poke(entry),
+         %{
+           "status" => :error,
+           "output" => "Contract is empty",
+           "warnings" => []
+         }}
 
-        resp = :aere_repl.to_response(st0, fn () -> :aere_repl.register_tracked_contract(st0, name1, code) end)
+      _ ->
+        name1 =
+          case name do
+            :none -> :none
+            nil -> :none
+            _ when is_binary(name) -> String.to_charlist(name)
+          end
+
+        resp =
+          :aere_repl.to_response(st0, fn ->
+            :aere_repl.register_tracked_contract(st0, name1, code)
+          end)
+
         new_state = ReplUtils.state_from_response(st0, resp)
 
         msg = ReplUtils.render_response(st0, resp)

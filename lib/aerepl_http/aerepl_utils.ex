@@ -45,10 +45,11 @@ defmodule ReplUtils do
           :internal_error -> "internal_error"
           :ask -> "ask"
         end,
-      "output" => case status do
-                    :internal_error -> "internal error"
-                    _ -> render(state, output)
-                  end,
+      "output" =>
+        case status do
+          :internal_error -> "internal error"
+          _ -> render(state, output)
+        end,
       "warnings" => for(w <- warnings, do: render(state, w))
     }
   end

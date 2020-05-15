@@ -66,6 +66,7 @@ defmodule StateKeeper do
     case Map.get(state, user, :undefined) do
       :undefined ->
         {:reply, {:error, :no_such_user}, state}
+
       entry ->
         {new_entry, msg} = UserEntry.deploy(entry, code, name)
         {:reply, Map.put(msg, "key", user), Map.put(state, user, new_entry)}
