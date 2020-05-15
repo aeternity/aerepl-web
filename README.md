@@ -149,9 +149,14 @@ Where:
    - `success` is a regular output with successful outcome
    - `error` means the query wasn't processed at all because of some mistake on the user side. This includes for example type errors, bad syntax, misusing the REPL features etc.
    - `internal error` is the error on the REPL side.
-   - `ask` indicates that the REPL has asked a question. It should provide the information about valid answers in the `output` field. If the user replies with empty input the default option will be chosen. If the input won't match with any of the options the question will be re-asked. While REPL is awaiting for the answer it will reject all deploy queries.
+   - `ask` indicates that the REPL has asked a question and awaits an answer from the client in the next `query` message.
  - `warnings` is a list of warnings that appeared during query evaluation
-   
+ 
+The `ask` response will appear in cases where the user needs to make some particular decision, eg. their action would
+remove something from the context and the REPL want's to ensure that they know what are they doing. In such a case,
+in the `output` field there should be message like `do you really want to proceed? [y]n`. To answer this question the client
+will need to make a regular `query` call with either `"y"` or `"n"` in the `input` field. If the `input` is empty, the 
+option in the brackets will be chosen as the default.
 
 #### autocomplete
 
