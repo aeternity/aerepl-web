@@ -144,7 +144,7 @@ session identifier. The structure of payload goes as follows:
 ```
 Where:
  - `key` describes the session key
- - `output` is the message to be printed out
+ - `output` contains the result of the last query in a text form. Intended to be printed out. 
  - `status` tells the type of the response:
    - `success` is a regular output with successful outcome
    - `error` means the query wasn't processed at all because of some mistake on the user side. This includes for example type errors, bad syntax, misusing the REPL features etc.
