@@ -59,7 +59,7 @@ defmodule UserEntry do
         name1 = case name do
                   :none -> :none
                   :nil -> :none
-                  _ -> String.to_charlist(name)
+                  _ when is_binary(name) -> String.to_charlist(name)
                 end
 
         resp = :aere_repl.to_response(st0, fn () -> :aere_repl.register_tracked_contract(st0, name1, code) end)

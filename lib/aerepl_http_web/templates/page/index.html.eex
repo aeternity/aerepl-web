@@ -17,14 +17,20 @@
 
                 <div id="buttons" class="row phone-only">
                     <button type="button" class="column" id="autocomplete">autocomplete</button>
-                    <button type="button" class="column" id="submit">submit</button>
                     <button type="button" class="column" id="new-line">new line</button>
+                    <button type="button" class="column" id="submit">submit</button>
                 </div>
 
 
                 <h4>Local contract editor</h3>
                 <div id="contract-editor">
-                    <textarea id="contract-code" autocomplete="off"></textarea>
+                    <textarea id="contract-code" autocomplete="off"><%=
+                        "contract Counter =\n" <>
+                        "  type state = int\n" <>
+                        "  entrypoint init() = 0\n" <>
+                        "  entrypoint get() = state\n" <>
+                        "  stateful entrypoint incr() = put(state + 1)\n"
+                        %></textarea>
                     <div class="row">
                         <input class="column" type="text" id="contract-name" placeholder="Variable name">
                         <button class="column" type="button" id="deploy">deploy</button>

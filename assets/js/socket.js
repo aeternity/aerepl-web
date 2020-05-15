@@ -138,7 +138,7 @@ function deployContract() {
     let payload = {code: code, key: key};
     if(name != "") {
         payload.name = name;
-    } payload.name = null
+    }
     channel.push("deploy", payload);
 }
 
