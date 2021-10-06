@@ -31,8 +31,14 @@ jobs:
         with:
           images: aeternity/test
           tags: |
-            type=ref,event=branch
-            
+            # branch event
+            type=ref,enable=true,priority=600,prefix=,suffix=,event=branch
+            # tag event
+            type=ref,enable=true,priority=600,prefix=,suffix=,event=tag
+            # pull request event
+            type=ref,enable=true,priority=600,prefix=pr-,suffix=,event=pr
+
+
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
