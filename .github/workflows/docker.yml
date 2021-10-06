@@ -25,24 +25,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASS }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: aeternity/test
-          tags: |
-            # branch event
-            type=ref,enable=true,priority=600,prefix=,suffix=,event=branch
-            # tag event
-            type=ref,enable=true,priority=600,prefix=,suffix=,event=tag
-            # pull request event
-            type=ref,enable=true,priority=600,prefix=pr-,suffix=,event=pr
-
+      - name: Branch env variable
+        run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: aeturnity/test:${{ env.BRANCH }}
+          build-args: |
+              BRANCH=${{ env.BRANCH }}
