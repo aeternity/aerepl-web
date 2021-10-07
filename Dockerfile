@@ -16,14 +16,15 @@ RUN git clone --depth 1 https://github.com/asdf-vm/asdf.git $HOME/.asdf && \
 
 ENV PATH="${PATH}:/root/.asdf/shims:/root/.asdf/bin"
 
-RUN asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-RUN asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
+RUN asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git && \
+    asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
 
 # Install Erlang, Elixir and node js
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN apt install -qq -y nodejs
-RUN asdf install elixir master-otp-21
-RUN asdf install erlang 21.0
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash && \
+    apt install -qq -y nodejs
+    
+RUN asdf install elixir master-otp-21 && \
+    asdf install erlang 21.0
 
 ENV ERL_LIBS=$ERL_LIBS:$(pwd)/deps/aerepl/_build/default/lib
 # Set the locale
