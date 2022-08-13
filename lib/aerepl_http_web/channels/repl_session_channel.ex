@@ -9,27 +9,34 @@ defmodule AereplHttpWeb.ReplSessionChannel do
 
   def handle_in("query", %{"input" => input, "state" => bin_state}, socket) do
     state0 = decrypt(bin_state)
-    {msg, state1} = :aere_gen_server.input(input, state0)
-    resp = %{"msg" => msg, "state" => encrypt(state1)}
+    {:repl_response, msg, _, status} = :aere_repl.process_input(state0, input)
+    state1 = case status do
+               {_, s} -> s
+               _ -> state0
+             end
+    msg_str = :aere_theme.render(msg)
+    resp = %{"msg" => :binary.list_to_bin(msg_str), "state" => encrypt(state1)}
     push(socket, "response", resp)
     {:noreply, socket}
   end
 
   def handle_info(:init, socket) do
-    state = :aere_repl.init_state(%{:theme => :none})
-    msg = :aere_gen_server.banner()
-    resp = %{"msg" => msg, "state" => encrypt(state)}
+    state = :aere_repl.init_state(%{:theme => %{}, call_gas => 10000000})
+    msg = :aere_theme.render(:aere_msg.banner())
+    resp = %{"msg" => :binary.list_to_bin(msg), "state" => encrypt(state)}
     push(socket, "response", resp)
     {:noreply, socket}
   end
 
   def encrypt(term) do
-    bin = Erlang.term_to_binary(term)
-    bin
+    bin = :erlang.term_to_binary(term)
+    str = :binary.bin_to_list(bin)
+    str
   end
 
-  def decrypt(bin) do
-    term = Erlang.binary_to_term(bin)
+  def decrypt(str) do
+    bin = :binary.list_to_bin(str)
+    term = :erlang.binary_to_term(bin)
     term
   end
 end

@@ -8,9 +8,7 @@ defmodule AereplHttp.Application do
 
   def start(_type, _args) do
     children = [
-      AereplHttpWeb.Endpoint,
-      %{:id => :aere_gen_server,
-        :start => {:aere_gen_server, :start_link, [[]]}}
+      AereplHttpWeb.Endpoint
     ]
 
     load_paths()

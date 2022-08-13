@@ -53,7 +53,7 @@ defmodule AereplHttp.MixProject do
         git: "https://github.com/aeternity/aerepl",
         branch: "feature/dockerfile",
         app: false,
-        compile: "./rebar3 compile",
+        compile: "make",
         manager: :make
       }
     ]

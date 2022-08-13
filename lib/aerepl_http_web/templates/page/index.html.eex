@@ -1,11 +1,4 @@
 <div class="row">
-
-    <div class="pc-only column" id="autocompletion-block">
-        Possible completions:
-        <hr>
-        <ul id="completion-list"></ul>
-    </div>
-
     <div class="column" id="main-block">
         <h3>Type some Sophia here!</h3>
 
@@ -16,25 +9,8 @@
                 <textarea id="query-input" autocomplete="off" rows="1"></textarea>
 
                 <div id="buttons" class="row phone-only">
-                    <button type="button" class="column" id="autocomplete">autocomplete</button>
                     <button type="button" class="column" id="new-line">new line</button>
                     <button type="button" class="column" id="submit">submit</button>
-                </div>
-
-
-                <h4>Local contract editor</h3>
-                <div id="contract-editor">
-                    <textarea id="contract-code" autocomplete="off"><%=
-                        "contract Counter =\n" <>
-                        "  type state = int\n" <>
-                        "  entrypoint init() = 0\n" <>
-                        "  entrypoint get() = state\n" <>
-                        "  stateful entrypoint incr() = put(state + 1)\n"
-                        %></textarea>
-                    <div class="row">
-                        <input class="column" type="text" id="contract-name" placeholder="Variable name">
-                        <button class="column" type="button" id="deploy">deploy</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -53,15 +29,6 @@
                 like <code>:t 2 + 2</code>
             </li>
 
-            <li class="pc-only">
-                For the autocompletion press <code>ctrl</code> + <code>space</code>
-            </li>
-
-            <li class="phone-only">
-                For the autocompletion press the <code>autocomplete</code> button
-            </li>
-
-            <li class="pc-only">
                 If you want to insert new line without sending the query use <code>shift</code> + <code>enter</code>
             </li>
 
@@ -70,25 +37,13 @@
             </li>
 
             <li>
-                You can import standard library files by the standard <code>include</code> directive, or the
-                <code>:include</code> command. Try <code>include "List.aes"</code> or <code>:include List.aes</code>
-            </li>
-
-            <li>
                 Define values, functions and types like you would normally do in Sophia:
                 <ul>
                     <li> <code> let x = 2 </code> </li>
-                    <li> <code> function f(y) = x + y </code> </li>
                     <li> <code> type endomorphism('a) = ('a) => 'a </code> </li>
                     <li> <code> record anti_bool = {true : unit, false : unit} </code> </li>
                 </ul>
             </li>
-
-            <li>
-                REPL commands (these you prepend with <code>:</code>) can be usually shortened, so <code>:include</code>
-                means the same as <code>:inc</code>
-            </li>
-
 
             <li>
                 The REPL is currently not connected to any public network, so it won't be able to interact with any real contracts.

@@ -46,11 +46,11 @@ RUN export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/default/lib \
 
 # Once the prod release is fixed, this CMD should be replaced with the one below, using the release
 WORKDIR /app
-CMD export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/default/lib \
+CMD export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/prod/lib \
     && export SECRET_KEY_BASE=$(mix phx.gen.secret) \
     && MIX_ENV=prod mix phx.server
 
-# CMD _build/prod/rel/aerepl_http/bin/aerepl_http start
+# CMD _build/prod/rel/aerepl_http/bin/aerepl_http console
 
 # Erl handle SIGQUIT instead of the default SIGINT
 STOPSIGNAL SIGQUIT
