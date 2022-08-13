@@ -13,7 +13,7 @@
       <section class="container">
           <nav role="navigation">
               <ul>
-                  <li><a href="https://github.com/aeternity/aerepl/blob/master/README.org">Get Started</a></li>
+                  <li><a href="https://github.com/aeternity/aerepl/blob/master/README.md">Get Started</a></li>
               </ul>
           </nav>
           <a href="https://github.com/aeternity/aesophia/" class="phx-logo">
