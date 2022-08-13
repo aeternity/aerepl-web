@@ -38,7 +38,7 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   end
 
   def encrypt(term) do
-    bin = :erlang.term_to_binary(term)
+    bin = :erlang.term_to_binary(term, [{:compressed, 9}])
     str = :binary.bin_to_list(bin)
     str
   end
