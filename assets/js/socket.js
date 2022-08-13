@@ -70,7 +70,6 @@ queryInput.addEventListener("keypress", event => {
 channel.on("response", payload => {
     var msg = payload.msg;
     state = payload.state;
-    console.log("MSG: " + msg)
     msg = payload.msg.replace(/^\n|\n$/g, '');
     if(msg !== "") {
         let messageItem = document.createElement("li");
