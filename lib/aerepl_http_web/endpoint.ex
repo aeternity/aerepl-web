@@ -6,13 +6,9 @@ defmodule AereplHttpWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_aerepl_http_key_kurwa",
+    key: "_aerepl_http_key",
     signing_salt: "nix8RNpo"
   ]
-
-  socket "/socket", AereplHttpWeb.UserSocket,
-    websocket: true,
-    longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #

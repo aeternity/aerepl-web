@@ -32,15 +32,15 @@ defmodule AereplHttp.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/default/lib"]
+  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/prod/lib"]
 
   # Specifies your project dependencies.
   #
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.16"},
-      {:phoenix_pubsub, "~> 1.1"},
+      {:phoenix, "~> 1.5.9"},
+      {:phoenix_pubsub, "~> 2.0.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
@@ -51,9 +51,9 @@ defmodule AereplHttp.MixProject do
       {
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        tag: "v1.2.2",
+        branch: "feature/dockerfile",
         app: false,
-        compile: "make aerepl; ./rebar3 compile",
+        compile: "./rebar3 compile",
         manager: :make
       }
     ]
