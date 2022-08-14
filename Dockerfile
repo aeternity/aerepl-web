@@ -1,23 +1,31 @@
 FROM aeternity/builder:1804 as builder
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 #ENV ERLANG_ROCKSDB_OPTS "-DWITH_SYSTEM_ROCKSDB=ON -DWITH_LZ4=ON -DWITH_SNAPPY=ON -DWITH_BZ2=ON -DWITH_ZSTD=ON"
+ENV ERLANG_ROCKSDB_OPTS "-DWITH_LZ4=ON -DWITH_SNAPPY=ON -DWITH_BZ2=ON -DWITH_ZSTD=ON"
 
-# OpenSSL is shared lib dependency
+ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get -qq update \
-    && apt-get -qq -y install git g++ cmake clang curl wget libsodium-dev libgmp10 \
-    libsnappy-dev liblz4-1 liblz4-dev libzstd1 libgflags2.2 libbz2-dev bzip2 \
-    unzip libssl-dev \
+    && apt-get -qq -y install git g++ cmake clang curl wget libsodium-dev libgmp-dev \
+    librocksdb-dev libsnappy-dev liblz4-dev libzstd-dev libgflags-dev libbz2-dev libssl-dev bzip2 \
+    unzip \
+    && ldconfig \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get -qq update \
+    && apt-get -qq -y install git cmake clang curl libsodium23 libgmp10 \
+    libsnappy1v5 liblz4-1 liblz4-dev libzstd1 libgflags2.2 libbz2-1.0 \
     && ldconfig \
     && rm -rf /var/lib/apt/lists/*
 
 # Install shared rocksdb code from builder container
-#COPY --from=builder /usr/local/lib/librocksdb.so.6.13.3 /usr/local/lib/
-#RUN ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6.13 \
-#    && ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6 \
-#    && ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so \
-#    && ldconfig
+COPY --from=builder /usr/local/lib/librocksdb.so.6.13.3 /usr/local/lib/
+ENV ROCKSDB_INCLUDE_DIRS /usr/local/lib
+RUN ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6.13 \
+    && ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6 \
+    && ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so \
+    && ldconfig
 
 # Install nodejs
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | /bin/bash \
