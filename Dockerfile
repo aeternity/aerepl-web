@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -qq update \
     && apt-get -qq -y install git g++ cmake clang curl wget libsodium-dev libgmp-dev \
     librocksdb-dev libsnappy-dev liblz4-dev libzstd-dev libgflags-dev libbz2-dev libssl-dev bzip2 \
-    unzip \
+    unzip inotify-tools\
     && ldconfig \
     && rm -rf /var/lib/apt/lists/*
 
