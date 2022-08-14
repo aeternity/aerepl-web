@@ -28,7 +28,7 @@ RUN ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6.13 \
     && ldconfig
 
 # Install nodejs
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | /bin/bash \
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | /bin/bash \
     && apt-get install -y nodejs
 
 ENV PATH /asdf/bin/:$PATH
@@ -53,13 +53,10 @@ RUN mix local.rebar --force \
     && mix local.hex --force \
     && mix deps.get
 
-RUN cd deps/aerepl && make
-
 RUN mix deps.compile
 
-ENV ERL_LIBS $ERL_LIBS:/app/deps/aerepl/_build/default/lib
+ENV ERL_LIBS $ERL_LIBS:/app/deps/aerepl/_build/prod/lib
 ENV SECRET_KEY_BASE $(mix phx.gen.secret)
-
 
 WORKDIR /app/assets
 RUN NODE_ENV=production \
@@ -67,13 +64,12 @@ RUN NODE_ENV=production \
     && npm run deploy \
     && cd /app && mix phx.digest
 
-
 WORKDIR /app
-RUN  MIX_ENV=prod mix release
 
 # Once the prod release is fixed, this CMD should be replaced with the one below, using the release
-CMD MIX_ENV=prod mix phx.server
+CMD mix phx.server
 
+# RUN  MIX_ENV=prod mix release
 # CMD _build/prod/rel/aerepl_http/bin/aerepl_http console
 
 # Erl handle SIGQUIT instead of the default SIGINT

@@ -5,7 +5,7 @@
 # is restricted to this project.
 
 # General application configuration
-use Mix.Config
+import Config
 
 config :aerepl_http,
   ecto_repos: [AereplHttp.Repo]
