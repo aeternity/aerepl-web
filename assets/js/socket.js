@@ -8,25 +8,17 @@ socket.connect();
 
 let channel = socket.channel("repl_session:lobby", {});
 
-
 let queryInput          = document.getElementById("query-input");
 let outputContainer     = document.getElementById("outputs");
-let completionContainer = document.getElementById("completion-list");
 
-let autocompleteButton  = document.getElementById("autocomplete");
 let newlineButton       = document.getElementById("new-line");
 let submitButton        = document.getElementById("submit");
 
-let deployButton        = document.getElementById("deploy");
-let contractName        = document.getElementById("contract-name");
-let contractCode        = document.getElementById("contract-code");
-
-
-var inputBufferBackup = null;
-var inputBufferNamePointer = null;
-var inputBufferNameBackPointer = null;
+let contractEditor      = document.getElementById("editor");
+let loadButton          = document.getElementById("load");
 
 var state = null;
+
 
 function submitQuery() {
     let messageItem = document.createElement("li");
@@ -51,19 +43,22 @@ function insertNewLine() {
     queryInput.focus();
 }
 
+function loadFiles() {
+    let contract = contractEditor.value;
+    channel.push("load", {files: [{filename: "contract.aes",
+                                   content: contract
+                                  }],
+                          state: state
+                         });
+}
 
 newlineButton.addEventListener('click', insertNewLine, false);
 submitButton.addEventListener('click', submitQuery, false);
+loadButton.addEventListener('click', loadFiles, false);
 
 queryInput.addEventListener("keypress", event => {
     if(event.keyCode === 13 && !event.shiftKey){
         submitQuery();
-    }
-
-    if(!event.ctrlKey) {
-        inputBufferBackup = null;
-        inputBufferNamePointer = null;
-        inputBufferNameBackPointer = null;
     }
 });
 

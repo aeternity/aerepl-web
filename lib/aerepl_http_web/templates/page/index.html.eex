@@ -12,6 +12,21 @@
                     <button type="button" class="column" id="new-line">new line</button>
                     <button type="button" class="column" id="submit">submit</button>
                 </div>
+                <h4>Local contract editor</h3>
+                    <div id="contract-editor">
+                        <textarea id="editor" autocomplete="off">
+                            <%=
+                            "main contract Counter =\n" <>
+                            "  type state = int\n" <>
+                            "  entrypoint init() = 0\n" <>
+                            "  entrypoint get() = state\n" <>
+                            "  stateful entrypoint incr() = put(state + 1)\n"
+                            %></textarea>
+                        <div class="row">
+                            <button class="column" type="button" id="load">Load</button>
+                        </div>
+                    </div>
+
             </div>
         </div>
 
