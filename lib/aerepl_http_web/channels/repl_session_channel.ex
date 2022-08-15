@@ -9,27 +9,15 @@ defmodule AereplHttpWeb.ReplSessionChannel do
 
   def handle_in("query", %{"input" => input, "state" => bin_state}, socket) do
     state0 = decrypt(bin_state)
-    me = self()
-    worker = :erlang.spawn_opt(
-      fn -> send(me, {self(), :aere_repl.process_input(state0, input)}) end,
-      [{:max_heap_size, %{size: 100000000, kill: :true, error_logger: :false}}]
-    )
-    receive do
-      {worker, {:repl_response, msg, _, status}} ->
-        state1 = case status do
-                   {_, s} -> s
-                   _ -> state0
-                 end
+    resp = case eval_input(input, state0) do
+      :timeout ->
+        %{"msg" => "TIMEOUT", "state" => bin_state}
+      {msg, state1} ->
         msg_str = :aere_theme.render(msg)
-        resp = %{"msg" => :binary.list_to_bin(msg_str), "state" => encrypt(state1)}
-        push(socket, "response", resp)
-        {:noreply, socket}
-    after
-      20000 ->
-        resp = %{"msg" => "TIMEOUT", "state" => bin_state}
-        push(socket, "response", resp)
-        {:noreply, socket}
+        %{"msg" => :binary.list_to_bin(msg_str), "state" => encrypt(state1)}
     end
+    push(socket, "response", resp)
+    {:noreply, socket}
   end
   def handle_in("load", %{"files" => files, "state" => bin_state}, socket) do
     case check_file_sizes(files) do
@@ -43,7 +31,10 @@ defmodule AereplHttpWeb.ReplSessionChannel do
           Map.new(files, fn(%{"filename" => filename, "content" => content}) -> {:binary.bin_to_list(filename), content}
           end)
         state1 = :aere_repl_state.loaded_files(filemap, state0)
-        resp = %{"msg" => "Loaded #{length(files)} file(s)", "state" => encrypt(state1)}
+        state2 = :aere_repl_state.included_files([], state1)
+        state3 = :aere_repl_state.included_code([], state2)
+        {_, state4} = eval_input("include \"contract.aes\"", state3)
+        resp = %{"msg" => "Loaded #{length(files)} file(s).", "state" => encrypt(state4)}
         push(socket, "response", resp)
         {:noreply, socket}
     end
@@ -68,6 +59,21 @@ defmodule AereplHttpWeb.ReplSessionChannel do
     bin = :binary.list_to_bin(str)
     term = :erlang.binary_to_term(bin)
     term
+  end
+
+  def eval_input(input, state0) do
+    me = self()
+    worker = :erlang.spawn_opt(
+      fn -> send(me, {self(), :aere_repl.process_input(state0, input)}) end,
+      [{:max_heap_size, %{size: 100000000, kill: :true, error_logger: :false}}]
+    )
+    receive do
+      {worker, {:repl_response, msg, _, {:ok, state1}}} -> {msg, state1}
+      {worker, {:repl_response, msg, _, _}} -> {msg, state0}
+    after
+      20000 ->
+        :timeout
+    end
   end
 
   def check_file_sizes(files) do
