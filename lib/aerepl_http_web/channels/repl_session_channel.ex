@@ -10,9 +10,12 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   def handle_in("query", %{"input" => input, "state" => bin_state}, socket) do
     state0 = decrypt(bin_state)
     me = self()
-    spawn(fn -> send(me, :aere_repl.process_input(state0, input)) end)
+    worker = :erlang.spawn_opt(
+      fn -> send(me, {self(), :aere_repl.process_input(state0, input)}) end,
+      [{:max_heap_size, %{size: 100000000, kill: :true, error_logger: :false}}]
+    )
     receive do
-      {:repl_response, msg, _, status} ->
+      {worker, {:repl_response, msg, _, status}} ->
         state1 = case status do
                    {_, s} -> s
                    _ -> state0
