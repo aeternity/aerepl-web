@@ -30,7 +30,7 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   end
 
   def handle_info(:init, socket) do
-    state = :aere_repl.init_state(%{:theme => %{}, :call_gas => 10000000})
+    state = :aere_repl.init_state(%{:theme => %{}, :call_gas => 10000000, :locked_opts => [:call_gas]})
     msg = :aere_theme.render(:aere_msg.banner())
     resp = %{"msg" => :binary.list_to_bin(msg), "state" => encrypt(state)}
     push(socket, "response", resp)
