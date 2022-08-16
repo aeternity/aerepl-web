@@ -20,23 +20,6 @@
     }
 }
 
-#autocompletion-block {
-    /* height: 100%; /\* Full-height: remove this if you want "auto" height *\/ */
-    max-width: 200px; /* Set the width of the sidebar */
-    /* position: fixed; /\* Fixed Sidebar (stay in place on scroll) *\/ */
-    z-index: 1; /* Stay on top */
-    /* top: 0; /\* Stay at the top *\/ */
-    left: 0;
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 20px;
-
-    border-color: #333;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 6px;
-
-}
-
 #completion-list li:hover {
     color: #EE306F;
 }
@@ -52,21 +35,25 @@
 }
 
 .code li.in:before {
-    content: '⮚';
+    content: 'AESO>';
     margin-left: -20px;
     margin-right: 10px;
 }
 .code li.out:before {
-    content: '⮘';
+    content: ' ';
     margin-left: -20px;
     margin-right: 10px;
 }
 
 .code li.in {
+    list-style-position: inside;
     list-style:none;
+    padding-left: 0;
 }
 .code li.out {
+    list-style-position: inside;
     list-style:none;
+    padding-left: 0;
     font-weight: 900;
     color: #EE306F;
 }

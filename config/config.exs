@@ -15,7 +15,7 @@ config :aerepl_http, AereplHttpWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "jQFd/4mPbDamT7HtZAFPaqCPvQuWNCLys/K4Pkk4d/1pst/cre5TstsGAEQ81Xru",
   render_errors: [view: AereplHttpWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: AereplHttp.PubSub, adapter: Phoenix.PubSub.PG2],
+  pubsub_server: AereplHttp.PubSub,
   live_view: [signing_salt: "oWsPn6IQ"]
 
 # Configures Elixir's Logger

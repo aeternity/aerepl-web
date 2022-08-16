@@ -8,7 +8,8 @@ defmodule AereplHttp.Application do
 
   def start(_type, _args) do
     children = [
-      AereplHttpWeb.Endpoint
+      AereplHttpWeb.Endpoint,
+      {Phoenix.PubSub, [name: AereplHttp.PubSub, adapter: Phoenix.PubSub.PG2]}
     ]
 
     load_paths()

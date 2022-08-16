@@ -2,6 +2,8 @@
 // DON'T JUDGE ME
 
 import {Socket} from "phoenix";
+var AU = require('ansi_up');
+var ansi = new AU.default;
 
 let socket = new Socket("/socket", {params: {token: window.userToken}});
 socket.connect();
@@ -21,17 +23,17 @@ var state = null;
 
 
 function submitQuery() {
+    let query = queryInput.value.trim();
     let messageItem = document.createElement("li");
-    messageItem.innerText = `${queryInput.value}`;
+    messageItem.innerText = query;
     messageItem.classList.add("in");
     outputContainer.appendChild(messageItem);
 
-    channel.push("query", {input: queryInput.value.trim(),
+    channel.push("query", {input: query,
                            state: state
                           });
     queryInput.value = "";
 }
-
 
 function insertNewLine() {
     let pos = queryInput.selectionStart;
@@ -57,29 +59,34 @@ submitButton.addEventListener('click', submitQuery, false);
 loadButton.addEventListener('click', loadFiles, false);
 
 queryInput.addEventListener("keypress", event => {
-    if(event.keyCode === 13 && !event.shiftKey){
+    if(event.keyCode === 13 && !event.shiftKey) {
         submitQuery();
     }
 });
 
 channel.on("response", payload => {
     var msg = payload.msg;
-    state = payload.state;
+    state = payload.state ? payload.state : state;
     msg = payload.msg.replace(/^\n|\n$/g, '');
     if(msg !== "") {
+        console.log(msg)
         let messageItem = document.createElement("li");
-        messageItem.innerText = msg;
+        // let content = document.createElement("template");
+        let content_str = ansi.ansi_to_html(msg);
+        console.log(content_str)
+        messageItem.innerHTML = content_str;
+        // messageItem.appendChild(content);
         messageItem.classList.add("out");
         outputContainer.appendChild(messageItem);
     }
 });
 
 channel.onError( () => console.log("Aaah, crap. Something has gone wrong with the channel.") );
-channel.onClose( () => console.log("The channel has gone away gracefully") );
+channel.onClose( () => console.log("The channel has gone away gracefully.") );
 
 
 channel.join()
-    .receive("ok", resp => { console.log("Okay, joined successfully"); })
-    .receive("error", resp => { console.log("Unable to join", resp); });
+    .receive("ok", resp => { console.log("Okay, joined successfully."); })
+    .receive("error", resp => { console.log("Unable to join :(", resp); });
 
 export default socket;

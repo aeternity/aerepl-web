@@ -4,10 +4,10 @@ defmodule AereplHttp.MixProject do
   def project do
     [
       app: :aerepl_http,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.13.2",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -26,7 +26,7 @@ defmodule AereplHttp.MixProject do
   def application do
     [
       mod: {AereplHttp.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger]
     ]
   end
 
@@ -40,14 +40,14 @@ defmodule AereplHttp.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.9"},
-      {:phoenix_pubsub, "~> 2.0.0"},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
-      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:phoenix_pubsub, "~> 2.1.1"},
+      {:phoenix_html, "~> 3.2.0"},
+      {:phoenix_live_reload, "~> 1.3.3", only: :dev},
+      {:jason, "~> 1.3.0"},
+      {:plug_cowboy, "~> 2.5.2"},
+      {:credo, "~> 1.6.6", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]},
+      {:telemetry, "~> 1.1.0"},
       {
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
