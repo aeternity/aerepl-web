@@ -1,31 +1,56 @@
-# Put aeternity node in second stage container
-FROM ubuntu:18.04
+FROM aeternity/builder:1804 as builder
+FROM ubuntu:20.04
 
+#ENV ERLANG_ROCKSDB_OPTS "-DWITH_SYSTEM_ROCKSDB=ON -DWITH_LZ4=ON -DWITH_SNAPPY=ON -DWITH_BZ2=ON -DWITH_ZSTD=ON"
+ENV ERLANG_ROCKSDB_OPTS "-DWITH_LZ4=ON -DWITH_SNAPPY=ON -DWITH_BZ2=ON -DWITH_ZSTD=ON"
 
-# OpenSSL is shared lib dependency
-RUN apt -qq update \
-  && apt -qq -y install libssl1.0.0 curl libsodium23 wget gnupg git locales make gcc g++ libsodium-dev autoconf inotify-tools \
-  && ldconfig \
-  && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND noninteractive
 
-# Install Erlang, Elixir and cancer
-RUN wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb \
-  && curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN yes | dpkg -i erlang-solutions_2.0_all.deb \
-  && apt -qq update \
-  && apt install --fix-missing \
-  && apt install -qq -y esl-erlang elixir nodejs
+RUN apt-get -qq update \
+    && apt-get -qq -y install git g++ cmake clang curl wget libsodium-dev libgmp-dev \
+    librocksdb-dev libsnappy-dev liblz4-dev libzstd-dev libgflags-dev libbz2-dev libssl-dev bzip2 \
+    unzip inotify-tools\
+    && ldconfig \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the locale
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
-RUN locale-gen
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+RUN apt-get -qq update \
+    && apt-get -qq -y install git cmake clang curl libsodium23 libgmp10 \
+    libsnappy1v5 liblz4-1 liblz4-dev libzstd1 libgflags2.2 libbz2-1.0 \
+    && ldconfig \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV SHELL /bin/bash
+# Install shared rocksdb code from builder container
+COPY --from=builder /usr/local/lib/librocksdb.so.6.13.3 /usr/local/lib/
+ENV ROCKSDB_INCLUDE_DIRS /usr/local/lib
+RUN ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6.13 \
+    && ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6 \
+    && ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so \
+    && ldconfig
+
+# Install nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | /bin/bash \
+    && apt-get install -y nodejs
+
+ENV PATH /asdf/bin/:$PATH
+
+RUN git clone https://github.com/asdf-vm/asdf.git /asdf --branch v0.10.2 \
+    && asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git \
+    && asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
+
+RUN asdf install erlang 25.0 \
+    && asdf global erlang 25.0 \
+    && asdf install elixir 1.13.2 \
+    && asdf global elixir 1.13.2
+
+RUN ls ~/.asdf/installs/elixir/1.13.2/bin/
+
+ENV PATH /root/.asdf/installs/elixir/1.13.2/bin/:/root/.asdf/installs/erlang/25.0/bin/:$PATH
 
 ADD . /app
+
+ENV ERL_LIBS $ERL_LIBS:/app/deps/aerepl/_build/prod/lib
+ENV SECRET_KEY_BASE $(mix phx.gen.secret)
+ENV MIX_ENV prod
 
 WORKDIR /app
 RUN mix local.rebar --force \
@@ -37,20 +62,15 @@ WORKDIR /app/assets
 RUN NODE_ENV=production \
     && npm install \
     && npm run deploy \
-    && cd /app && mix phx.digest
+    && node node_modules/webpack/bin/webpack.js --mode production \
+    && cd /app \
+    && mix phx.digest
 
 WORKDIR /app
-RUN export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/default/lib \
-    && export SECRET_KEY_BASE=$(mix phx.gen.secret) \
-    && MIX_ENV=prod mix release
 
-# Once the prod release is fixed, this CMD should be replaced with the one below, using the release
-WORKDIR /app
-CMD export ERL_LIBS=$ERL_LIBS:/app/deps/aerepl/_build/default/lib \
-    && export SECRET_KEY_BASE=$(mix phx.gen.secret) \
-    && MIX_ENV=prod mix phx.server
-
-# CMD _build/prod/rel/aerepl_http/bin/aerepl_http start
+CMD export SECRET_KEY_BASE=$(mix phx.gen.secret) \
+    && mix phx.server
+#CMD _build/prod/rel/aerepl_http/bin/aerepl_http console
 
 # Erl handle SIGQUIT instead of the default SIGINT
 STOPSIGNAL SIGQUIT

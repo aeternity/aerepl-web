@@ -6,7 +6,7 @@ defmodule AereplHttpWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_aerepl_http_key_kurwa",
+    key: "_aerepl_http_key",
     signing_salt: "nix8RNpo"
   ]
 

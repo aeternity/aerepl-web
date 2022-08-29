@@ -22,7 +22,6 @@ defmodule AereplHttpWeb do
       use Phoenix.Controller, namespace: AereplHttpWeb
 
       import Plug.Conn
-      import AereplHttpWeb.Gettext
       alias AereplHttpWeb.Router.Helpers, as: Routes
     end
   end
@@ -40,7 +39,6 @@ defmodule AereplHttpWeb do
       use Phoenix.HTML
 
       import AereplHttpWeb.ErrorHelpers
-      import AereplHttpWeb.Gettext
       alias AereplHttpWeb.Router.Helpers, as: Routes
     end
   end
@@ -56,7 +54,6 @@ defmodule AereplHttpWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import AereplHttpWeb.Gettext
     end
   end
 

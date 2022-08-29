@@ -1,4 +1,4 @@
-use Mix.Config
+import Mix.Config
 
 # Configure your database
 config :aerepl_http, AereplHttp.Repo,
@@ -25,7 +25,7 @@ config :aerepl_http, AereplHttpWeb.Endpoint,
       "node_modules/webpack/bin/webpack.js",
       "--mode",
       "development",
-      "--watch-stdin",
+      "--watch",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
@@ -59,7 +59,6 @@ config :aerepl_http, AereplHttpWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
       ~r"lib/aerepl_http_web/(live|views)/.*(ex)$",
       ~r"lib/aerepl_http_web/templates/.*(eex)$"
     ]
