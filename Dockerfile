@@ -68,7 +68,8 @@ RUN NODE_ENV=production \
 
 WORKDIR /app
 
-CMD mix phx.server
+CMD export SECRET_KEY_BASE=$(mix phx.gen.secret) \
+    && mix phx.server
 #CMD _build/prod/rel/aerepl_http/bin/aerepl_http console
 
 # Erl handle SIGQUIT instead of the default SIGINT
