@@ -81,12 +81,12 @@ channel.on("response", payload => {
     }
 });
 
-channel.onError( () => console.log("Aaah, crap. Something has gone wrong with the channel.") );
-channel.onClose( () => console.log("The channel has gone away gracefully.") );
+channel.onError( () => alert("Channel error.") );
+channel.onClose( () => alert("The channel has been closed. Please refresh to start a new session.") );
 
 
 channel.join()
-    .receive("ok", resp => { console.log("Okay, joined successfully."); })
-    .receive("error", resp => { console.log("Unable to join :(", resp); });
+    .receive("ok", resp => { console.log("Joined aerepl lobby."); })
+    .receive("error", resp => { alert("Could not establish the connection.") });
 
 export default socket;
