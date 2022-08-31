@@ -1,0 +1,75 @@
+version: 2.1
+
+executors:
+  aebuilder:
+    docker:
+      - image: aeternity/builder:bionic-otp23
+        user: builder
+    working_directory: ~/src
+  docker_builder:
+    docker:
+      - image: circleci/buildpack-deps:bionic
+
+jobs:
+  verify_mix_lock:
+    executor: aebuilder
+    steps:
+      - checkout
+      - run:
+          name: Ensure mix lock file is up-to-date
+          command: |
+            mix deps.get
+            git diff --quiet -- mix.lock || (echo "mix.lock is not up-to-date" && exit 1)
+  verify_package_lock:
+    executor: aebuilder
+    steps:
+      - checkout
+      - run:
+          name: Ensure package lock file is up-to-date
+          command: |
+            cd assets
+            npm i --package-lock-only
+            git diff --quiet -- package-lock.json || (echo package-lock.json is not up-to-date" && exit 1)
+  build:
+    executor: aebuilder
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: make
+  docker_push_tag:
+    executor: docker_builder
+    environment:
+      DOCKERHUB_REPO: aeternity/aerepl_http
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and push Docker image to DockerHub
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker build -t ${DOCKERHUB_REPO:?}:${CIRCLE_TAG:?} -t ${DOCKERHUB_REPO:?}:latest .
+            docker push ${DOCKERHUB_REPO:?}:${CIRCLE_TAG:?}
+            docker push ${DOCKERHUB_REPO:?}:latest
+workflows:
+  version: 2
+  build_push:
+    jobs:
+      - verify_mix_lock
+      - verify_package_lock
+      - build:
+          filters:
+            tags:
+              only: /^v.*$/
+      - docker_push_tag:
+          context: ae-dockerhub
+          requires:
+            - build
+            - verify_mix_lock
+            - verify_package_lock
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*$/

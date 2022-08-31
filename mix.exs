@@ -4,10 +4,10 @@ defmodule AereplHttp.MixProject do
   def project do
     [
       app: :aerepl_http,
-      version: "0.1.0",
-      elixir: "~> 1.5",
+      version: "2.1.0",
+      elixir: "~> 1.13.2",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -26,34 +26,34 @@ defmodule AereplHttp.MixProject do
   def application do
     [
       mod: {AereplHttp.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger]
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/default/lib"]
+  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/prod/lib"]
 
   # Specifies your project dependencies.
   #
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.16"},
-      {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
-      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:phoenix, "~> 1.5.9"},
+      {:phoenix_pubsub, "~> 2.1.1"},
+      {:phoenix_html, "~> 3.2.0"},
+      {:phoenix_live_reload, "~> 1.3.3", only: :dev},
+      {:jason, "~> 1.3.0"},
+      {:plug_cowboy, "~> 2.5.2"},
+      {:credo, "~> 1.6.6", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]},
+      {:telemetry, "~> 1.1.0"},
       {
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        tag: "v1.2.2",
+        tag: "v2.1.0",
         app: false,
-        compile: "make aerepl; ./rebar3 compile",
+        compile: "make",
         manager: :make
       }
     ]

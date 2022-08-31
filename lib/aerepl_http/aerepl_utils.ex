@@ -2,60 +2,44 @@ defmodule ReplUtils do
   require Logger
 
   def init_state() do
-    st = :aere_repl.init_state()
-    op = :erlang.element(5, st)
-
-    # NOTE: REMEMBER TO UPDATE THE IDX AFTER REPL UPDATE
-    op1 = :erlang.setelement(10, op, true)
-    st1 = :erlang.setelement(5, st, op1)
-
-    st1
+    state = :aere_repl.init_state(
+      %{theme:       :aere_theme.default_theme(),
+        call_gas:    100000000,
+        locked_opts: [:call_gas]
+      })
+    banner = render_msg(:aere_msg.banner())
+    {banner, state}
   end
 
-  def state_from_response(prev_state, resp) do
-    case resp do
-      {:repl_response, _, _, {:success, st1}} -> {:repl_state, st1}
-      {:repl_response, _, _, _} -> {:repl_state, prev_state}
-      {:repl_question, _, _, _, _} -> {:repl_question, prev_state, resp}
+  def eval_input(input, state0) do
+    me = self()
+    worker = :erlang.spawn_opt(
+      fn -> send(me, {self(), :aere_repl.process_input(state0, input)}) end,
+      [{:max_heap_size, %{size: 100000000, kill: :true, error_logger: :false}}]
+    )
+    receive do
+      {worker, {:repl_response, msg, _, {:ok, state1}}} ->
+        {render_msg(msg), state1}
+      {worker, {:repl_response, msg, _, :internal_error}} ->
+        Logger.error(msg)
+        {"Internal REPL error. Type :reset if the problem persists.", state0}
+      {worker, {:repl_response, msg, _, _}} ->
+        {render_msg(msg), state0}
+    after
+      20000 ->
+        :timeout
     end
   end
 
-  def render(state, repl_str), do: state |> :aere_repl.render_msg(repl_str) |> List.to_string()
-
-  def render_response(_, st) when elem(st, 0) == :repl_state,
-    do: %{"status" => "success", "output" => "", "warnings" => []}
-
-  def render_response(prev_state, {:repl_response, output, warnings, status}) do
-    state =
-      case status do
-        {:success, new_state} -> new_state
-        _ -> prev_state
-      end
-
-    case status do
-      :internal_error -> Logger.error(render(state, output))
-      _ -> :ok
-    end
-
-    %{
-      "status" =>
-        case status do
-          {:success, _} -> "success"
-          :error -> "error"
-          :internal_error -> "internal_error"
-          :ask -> "ask"
-        end,
-      "output" =>
-        case status do
-          :internal_error -> "internal error"
-          _ -> render(state, output)
-        end,
-      "warnings" => for(w <- warnings, do: render(state, w))
-    }
+  def load_files(filemap, state0) do
+    state1 = :aere_repl_state.loaded_files(filemap, state0)
+    state2 = :aere_repl_state.included_files([], state1)
+    state3 = :aere_repl_state.included_code([], state2)
+    {_, state4} = eval_input("include \"contract.aes\"", state3)
+    state4
   end
 
-  def render_response(prev_state, resp) when elem(resp, 0) == :repl_question,
-    do: render_response(prev_state, :aere_repl.question_to_response(resp))
-
-  def render_response(any), do: render_response(:aere_repl.init_state(), any)
+  def render_msg(msg) do
+    :binary.list_to_bin(:aere_theme.render(:aere_theme.default_theme(), msg))
+  end
 end
