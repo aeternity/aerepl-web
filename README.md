@@ -69,7 +69,7 @@ channel.push(/*message type*/, /*payload*/);
 
 ## Protocol
 
-The server receives 2 types of messages: `query`` and `load`, and
+The server receives 2 types of messages: `query` and `load`, and
 responds with `response`.
 
 ### Sent by the client
@@ -118,4 +118,4 @@ session identifier. The structure of payload goes as follows:
 ```
 Where:
  - `state` encapsulates REPL's state. If it is not provided, then the state hasn't changed.
- - `msg` contains the result of the last query in a text form. Ready to be printed out. 
+ - `msg` contains the result of the last query in a text form. Ready to be printed out.
