@@ -9,7 +9,7 @@ on:
 
 env:
   ENV: "prd"
-  APP: "aerepl_http"
+  APP: "aerepl-http"
 
 jobs:
   main:
