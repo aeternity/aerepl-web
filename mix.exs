@@ -51,7 +51,7 @@ defmodule AereplHttp.MixProject do
       {
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        tag: "v2.1.0",
+        tag: "v2.2.0",
         app: false,
         compile: "make",
         manager: :make
