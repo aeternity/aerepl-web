@@ -65,7 +65,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: aeternity/aerepl_http
+          images: aeternitybot/aerepl_http
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'master') }}
             type=raw,value=master,enable=${{ endsWith(GitHub.ref, 'master') }}
@@ -80,7 +80,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
