@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.2](https://github.com/aeternity/aerepl_http/compare/v2.1.1...v2.1.2) (2022-09-06)
+
+
+### CI / CD
+
+* **build:** fix dockerhub repo name ([#29](https://github.com/aeternity/aerepl_http/issues/29)) ([3488a07](https://github.com/aeternity/aerepl_http/commit/3488a0781fd3c303d8fdbd901c81a90dbf0f17c2))
+* **build:** try context path for docker build step ([#32](https://github.com/aeternity/aerepl_http/issues/32)) ([e0ea337](https://github.com/aeternity/aerepl_http/commit/e0ea337af4931fb62470721085e8cd4426ebf02d))
+
 ## [2.1.1](https://github.com/aeternity/aerepl_http/compare/v2.1.0...v2.1.1) (2022-09-03)
 
 
