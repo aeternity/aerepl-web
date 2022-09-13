@@ -4,7 +4,7 @@ defmodule AereplHttp.MixProject do
   def project do
     [
       app: :aerepl_http,
-      version: "2.1.2",
+      version: "2.3.0",
       elixir: "~> 1.13.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
@@ -51,7 +51,7 @@ defmodule AereplHttp.MixProject do
       {
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        tag: "v2.2.1",
+        tag: "v2.3.0",
         app: false,
         compile: "make",
         manager: :make
