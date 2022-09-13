@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.3](https://github.com/aeternity/aerepl_http/compare/v2.1.2...v2.1.3) (2022-09-13)
+
+
+### CI / CD
+
+* **build:** try to provide the elixir file name for release plugin ([#34](https://github.com/aeternity/aerepl_http/issues/34)) ([9e4b523](https://github.com/aeternity/aerepl_http/commit/9e4b52386c9a5d25b5b0fb389542f1d78396c6c1))
+
+
+### Miscellaneous
+
+* release 2.3.0 ([#36](https://github.com/aeternity/aerepl_http/issues/36)) ([09bfb6c](https://github.com/aeternity/aerepl_http/commit/09bfb6c527d70970d2fd4b5415b1b8bff0e31210))
+
 ## [2.1.2](https://github.com/aeternity/aerepl_http/compare/v2.1.1...v2.1.2) (2022-09-06)
 
 
