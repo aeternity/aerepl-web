@@ -32,11 +32,13 @@ defmodule ReplUtils do
   end
 
   def load_files(filemap, state0) do
-    state1 = :aere_repl_state.loaded_files(filemap, state0)
-    state2 = :aere_repl_state.included_files([], state1)
-    state3 = :aere_repl_state.included_code([], state2)
-    {_, state4} = eval_input("include \"contract.aes\"", state3)
-    state4
+      try do
+        state1 = :aere_repl.register_modules(Map.to_list(filemap), state0)
+        {_, state2} = eval_input("include \"contract.aes\"", state1)
+        {:ok, state2}
+      catch {:repl_error, err} ->
+          {:error, render_msg(err)}
+      end
   end
 
   def render_msg(msg) do

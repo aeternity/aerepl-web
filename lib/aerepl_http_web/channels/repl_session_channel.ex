@@ -18,11 +18,9 @@ defmodule AereplHttpWeb.ReplSessionChannel do
     {:noreply, socket}
   end
   def handle_in("load", %{"files" => files, "state" => bin_state}, socket) do
-    state0 = decrypt(bin_state)
     case check_file_sizes(files) do
       :too_big ->
         push_response("Files too big.", socket)
-        {:noreply, socket}
       :ok ->
         state0 = decrypt(bin_state)
         filemap =
@@ -30,10 +28,14 @@ defmodule AereplHttpWeb.ReplSessionChannel do
                                "content" => content}) ->
               {:binary.bin_to_list(filename), content}
           end)
-        state1 = ReplUtils.load_files(filemap, state0)
-        push_response("Loaded #{length(files)} file(s).", state1, socket)
-        {:noreply, socket}
+        case ReplUtils.load_files(filemap, state0) do
+          {:ok, state1} ->
+            push_response("Loaded #{length(files)} file(s).", state1, socket)
+          {:error, msg} ->
+            push_response(msg, socket)
+        end
     end
+    {:noreply, socket}
   end
 
   def push_response(msg, socket) do
