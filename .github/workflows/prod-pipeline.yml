@@ -10,7 +10,6 @@ on:
 env:
   ENV: "prd"
   APP: "aerepl-http"
-
 jobs:
   main:
     runs-on: ubuntu-latest
