@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.0](https://github.com/aeternity/aerepl_http/compare/v2.1.3...v2.2.0) (2022-09-14)
+
+
+### Features
+
+* triggere release please ([28e1d95](https://github.com/aeternity/aerepl_http/commit/28e1d959937197e0e23949400904d56819fe2566))
+
+
+### Bug Fixes
+
+* release ([#37](https://github.com/aeternity/aerepl_http/issues/37)) ([ae33ec3](https://github.com/aeternity/aerepl_http/commit/ae33ec39216a7a188f92cae6f5f0e882152863d7))
+
 ## [2.1.3](https://github.com/aeternity/aerepl_http/compare/v2.1.2...v2.1.3) (2022-09-13)
 
 
