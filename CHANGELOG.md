@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/aeternity/aerepl_http/compare/v2.2.0...v2.2.1) (2023-07-29)
+
+
+### CI / CD
+
+* revert actions to v4 ([5af89e0](https://github.com/aeternity/aerepl_http/commit/5af89e0da988956106bb23f8033402d485ebdd2a))
+* use v6 version gh actions for all steps in stg ([#39](https://github.com/aeternity/aerepl_http/issues/39)) ([1cd0f81](https://github.com/aeternity/aerepl_http/commit/1cd0f81201fe79ed0dfbd09c593d80e7e7e10df7))
+
 ## [2.2.0](https://github.com/aeternity/aerepl_http/compare/v2.1.3...v2.2.0) (2022-09-14)
 
 
