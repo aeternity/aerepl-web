@@ -5,7 +5,7 @@ defmodule AereplHttp.MixProject do
     [
       app: :aerepl_http,
       version: "2.2.0",
-      elixir: "~> 1.13.2",
+      elixir: "~> 1.15.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -32,7 +32,7 @@ defmodule AereplHttp.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/prod/lib"]
+  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/prod/rel/aerepl/lib"]
 
   # Specifies your project dependencies.
   #
@@ -48,10 +48,12 @@ defmodule AereplHttp.MixProject do
       {:credo, "~> 1.6.6", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]},
       {:telemetry, "~> 1.1.0"},
+      {:uuid, "~> 1.1"},
       {
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        tag: "v2.3.0",
+        # tag: "v3.0.0",
+        branch: "generic-server",
         app: false,
         compile: "make",
         manager: :make

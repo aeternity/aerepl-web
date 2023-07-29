@@ -19,7 +19,7 @@ let submitButton        = document.getElementById("submit");
 let contractEditor      = document.getElementById("editor");
 let loadButton          = document.getElementById("load");
 
-var state = null;
+var session = null;
 
 
 function submitQuery() {
@@ -30,7 +30,7 @@ function submitQuery() {
     outputContainer.appendChild(messageItem);
 
     channel.push("query", {input: query,
-                           state: state
+                           user_session: session
                           });
     queryInput.value = "";
 }
@@ -50,7 +50,7 @@ function loadFiles() {
     channel.push("load", {files: [{filename: "contract.aes",
                                    content: contract
                                   }],
-                          state: state
+                          user_session: session
                          });
 }
 
@@ -66,7 +66,8 @@ queryInput.addEventListener("keypress", event => {
 
 channel.on("response", payload => {
     var msg = payload.msg;
-    state = payload.state ? payload.state : state;
+    console.log(msg);
+    session = payload.user_session ? payload.user_session : session;
     msg = payload.msg.replace(/^\n|\n$/g, '');
     if(msg !== "") {
         console.log(msg)

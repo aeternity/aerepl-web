@@ -7,7 +7,7 @@ defmodule AereplHttpWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_aerepl_http_key",
-    signing_salt: "nix8RNpo"
+    signing_salt: "nix8RNpr"
   ]
 
   socket "/socket", AereplHttpWeb.UserSocket,
