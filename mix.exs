@@ -5,7 +5,7 @@ defmodule AereplHttp.MixProject do
     [
       app: :aerepl_http,
       version: "2.2.0",
-      elixir: "~> 1.15.2",
+      elixir: "~> 1.13.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -53,7 +53,7 @@ defmodule AereplHttp.MixProject do
         :aerepl,
         git: "https://github.com/aeternity/aerepl",
         # tag: "v3.0.0",
-        branch: "generic-server",
+        branch: "fs-cache",
         app: false,
         compile: "make",
         manager: :make

@@ -21,11 +21,9 @@ defmodule AereplHttpWeb.ReplSessionChannel do
     {:noreply, socket}
   end
   def handle_in("load", %{"files" => files, "user_session" => session_id}, socket) do
-    filemap =
-      List.map(files, fn(%{"filename" => filename,
-                            "content" => content}) ->
-          {:binary.bin_to_list(filename), content}
-      end)
+    filemap = for %{"filename" => filename,
+                    "content" => content} <- files,
+      do: {String.to_charlist(filename), content}
 
     out = GenServer.call(
       AereplHttp.SessionService.via(session_id),
