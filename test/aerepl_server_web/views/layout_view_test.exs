@@ -1,5 +1,5 @@
-defmodule AereplHttpWeb.LayoutViewTest do
-  use AereplHttpWeb.ConnCase, async: true
+defmodule AereplServerWeb.LayoutViewTest do
+  use AereplServerWeb.ConnCase, async: true
 
   # When testing helpers, you may want to import Phoenix.HTML and
   # use functions such as safe_to_string() to convert the helper

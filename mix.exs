@@ -1,9 +1,9 @@
-defmodule AereplHttp.MixProject do
+defmodule AereplServer.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :aerepl_http,
+      app: :aerepl_web,
       version: "2.2.0",
       elixir: "~> 1.13.2",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -25,7 +25,7 @@ defmodule AereplHttp.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {AereplHttp.Application, []},
+      mod: {AereplServer.Application, []},
       extra_applications: [:logger]
     ]
   end

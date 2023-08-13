@@ -1,14 +1,14 @@
-defmodule AereplHttp.SessionService do
+defmodule AereplServer.SessionService do
   @moduledoc """
   User session process.
   """
   use GenServer
 
-  alias AereplHttp.SessionData
+  alias AereplServer.SessionData
 
 
   def via(session_id) when is_binary(session_id) do
-    {:via, Registry, {AereplHttp.SessionRegistry, {__MODULE__, session_id}}}
+    {:via, Registry, {AereplServer.SessionRegistry, {__MODULE__, session_id}}}
   end
 
 
@@ -28,7 +28,7 @@ defmodule AereplHttp.SessionService do
 
   def start(session) do
     DynamicSupervisor.start_child(
-      AereplHttp.SessionSupervisor,
+      AereplServer.SessionSupervisor,
       {__MODULE__, session}
     )
   end

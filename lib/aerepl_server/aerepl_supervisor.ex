@@ -1,4 +1,4 @@
-defmodule AereplHttp.AereplSupervisor do
+defmodule AereplServer.AereplSupervisor do
   @moduledoc """
   Supervisor process for handling user sessions.
   """
@@ -10,8 +10,8 @@ defmodule AereplHttp.AereplSupervisor do
 
   def init(_init_arg) do
     children = [
-      {Registry, name: AereplHttp.SessionRegistry, keys: :unique},
-      {DynamicSupervisor, name: AereplHttp.SessionSupervisor,  strategy: :one_for_one},
+      {Registry, name: AereplServer.SessionRegistry, keys: :unique},
+      {DynamicSupervisor, name: AereplServer.SessionSupervisor,  strategy: :one_for_one},
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

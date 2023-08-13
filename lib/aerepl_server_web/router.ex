@@ -1,5 +1,5 @@
-defmodule AereplHttpWeb.Router do
-  use AereplHttpWeb, :router
+defmodule AereplServerWeb.Router do
+  use AereplServerWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,14 +13,14 @@ defmodule AereplHttpWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", AereplHttpWeb do
+  scope "/", AereplServerWeb do
     pipe_through :browser
 
     get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", AereplHttpWeb do
+  # scope "/api", AereplServerWeb do
   #   pipe_through :api
   # end
 end

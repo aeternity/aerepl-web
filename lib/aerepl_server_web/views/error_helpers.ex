@@ -1,4 +1,4 @@
-defmodule AereplHttpWeb.ErrorHelpers do
+defmodule AereplServerWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """

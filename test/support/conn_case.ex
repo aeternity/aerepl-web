@@ -1,4 +1,4 @@
-defmodule AereplHttpWeb.ConnCase do
+defmodule AereplServerWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule AereplHttpWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use AereplHttpWeb.ConnCase, async: true`, although
+  by setting `use AereplServerWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -21,18 +21,18 @@ defmodule AereplHttpWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      alias AereplHttpWeb.Router.Helpers, as: Routes
+      alias AereplServerWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint AereplHttpWeb.Endpoint
+      @endpoint AereplServerWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AereplHttp.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AereplServer.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(AereplHttp.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(AereplServer.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

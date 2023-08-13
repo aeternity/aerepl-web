@@ -1,5 +1,5 @@
-defmodule AereplHttpWeb.PageControllerTest do
-  use AereplHttpWeb.ConnCase
+defmodule AereplServerWeb.PageControllerTest do
+  use AereplServerWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")

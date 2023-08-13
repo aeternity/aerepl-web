@@ -1,5 +1,5 @@
-defmodule AereplHttpWeb.ErrorView do
-  use AereplHttpWeb, :view
+defmodule AereplServerWeb.ErrorView do
+  use AereplServerWeb, :view
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.

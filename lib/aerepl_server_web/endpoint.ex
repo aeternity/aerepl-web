@@ -1,16 +1,16 @@
-defmodule AereplHttpWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :aerepl_http
+defmodule AereplServerWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :aerepl_web
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_aerepl_http_key",
+    key: "_aerepl_web_key",
     signing_salt: "nix8RNpr"
   ]
 
-  socket "/socket", AereplHttpWeb.UserSocket,
+  socket "/socket", AereplServerWeb.UserSocket,
     websocket: true,
     longpoll: false
 
@@ -20,7 +20,7 @@ defmodule AereplHttpWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :aerepl_http,
+    from: :aerepl_web,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
@@ -43,5 +43,5 @@ defmodule AereplHttpWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug AereplHttpWeb.Router
+  plug AereplServerWeb.Router
 end

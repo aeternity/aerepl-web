@@ -1,4 +1,4 @@
-defmodule AereplHttp.Application do
+defmodule AereplServer.Application do
   use Application
 
   def load_paths() do
@@ -10,21 +10,21 @@ defmodule AereplHttp.Application do
     load_paths()
 
     children = [
-      {Phoenix.PubSub, [name: AereplHttp.PubSub, adapter: Phoenix.PubSub.PG2]},
-      AereplHttpWeb.Endpoint,
-      AereplHttp.AereplSupervisor,
+      {Phoenix.PubSub, [name: AereplServer.PubSub, adapter: Phoenix.PubSub.PG2]},
+      AereplServerWeb.Endpoint,
+      AereplServer.AereplSupervisor,
     ]
 
     opts = [
       strategy: :one_for_one,
-      name: AereplHttp.Supervisor
+      name: AereplServer.Supervisor
     ]
 
     Supervisor.start_link(children, opts)
   end
 
   def config_change(changed, _new, removed) do
-    AereplHttpWeb.Endpoint.config_change(changed, removed)
+    AereplServerWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

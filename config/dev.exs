@@ -1,10 +1,10 @@
 import Mix.Config
 
 # Configure your database
-config :aerepl_http, AereplHttp.Repo,
+config :aerepl_web, AereplServer.Repo,
   username: "postgres",
   password: "postgres",
-  database: "aerepl_http_dev",
+  database: "aerepl_web_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -15,7 +15,7 @@ config :aerepl_http, AereplHttp.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :aerepl_http, AereplHttpWeb.Endpoint,
+config :aerepl_web, AereplServerWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -55,12 +55,12 @@ config :aerepl_http, AereplHttpWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :aerepl_http, AereplHttpWeb.Endpoint,
+config :aerepl_web, AereplServerWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"lib/aerepl_http_web/(live|views)/.*(ex)$",
-      ~r"lib/aerepl_http_web/templates/.*(eex)$"
+      ~r"lib/aerepl_web_web/(live|views)/.*(ex)$",
+      ~r"lib/aerepl_web_web/templates/.*(eex)$"
     ]
   ]
 

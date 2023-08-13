@@ -1,8 +1,8 @@
-defmodule AereplHttpWeb.ReplSessionChannel do
-  use AereplHttpWeb, :channel
+defmodule AereplServerWeb.ReplSessionChannel do
+  use AereplServerWeb, :channel
   require Logger
 
-  alias AereplHttp.{
+  alias AereplServer.{
     SessionData,
     SessionService,
   }
@@ -13,7 +13,7 @@ defmodule AereplHttpWeb.ReplSessionChannel do
   end
 
   def handle_in("query", %{"input" => input, "user_session" => session_id}, socket) do
-    out = GenServer.call(AereplHttp.SessionService.via(session_id), {:repl_input_text, input})
+    out = GenServer.call(AereplServer.SessionService.via(session_id), {:repl_input_text, input})
 
     resp = %{"msg" => out}
     push(socket, "response", resp)
@@ -26,7 +26,7 @@ defmodule AereplHttpWeb.ReplSessionChannel do
       do: {String.to_charlist(filename), content}
 
     out = GenServer.call(
-      AereplHttp.SessionService.via(session_id),
+      AereplServer.SessionService.via(session_id),
       {:repl_load_files, filemap}
     )
 

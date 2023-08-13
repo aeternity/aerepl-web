@@ -7,15 +7,15 @@
 # General application configuration
 import Config
 
-config :aerepl_http,
-  ecto_repos: [AereplHttp.Repo]
+config :aerepl_web,
+  ecto_repos: [AereplServer.Repo]
 
 # Configures the endpoint
-config :aerepl_http, AereplHttpWeb.Endpoint,
+config :aerepl_web, AereplServerWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "jQFd/4mPbDamT7HtZAFPaqCPvQuWNCLys/K4Pkk4d/1pst/cre5TstsGAEQ81Xru",
-  render_errors: [view: AereplHttpWeb.ErrorView, accepts: ~w(html json)],
-  pubsub_server: AereplHttp.PubSub,
+  render_errors: [view: AereplServerWeb.ErrorView, accepts: ~w(html json)],
+  pubsub_server: AereplServer.PubSub,
   live_view: [signing_salt: "oWsPn6IQ"]
 
 # Configures Elixir's Logger

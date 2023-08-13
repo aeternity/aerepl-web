@@ -1,4 +1,4 @@
-defmodule AereplHttp.DataCase do
+defmodule AereplServer.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -10,7 +10,7 @@ defmodule AereplHttp.DataCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use AereplHttp.DataCase, async: true`, although
+  by setting `use AereplServer.DataCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -18,20 +18,20 @@ defmodule AereplHttp.DataCase do
 
   using do
     quote do
-      alias AereplHttp.Repo
+      alias AereplServer.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import AereplHttp.DataCase
+      import AereplServer.DataCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AereplHttp.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AereplServer.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(AereplHttp.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(AereplServer.Repo, {:shared, self()})
     end
 
     :ok

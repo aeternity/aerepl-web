@@ -1,10 +1,10 @@
-defmodule AereplHttpWeb.ReplSessionChannelTest do
-  use AereplHttpWeb.ChannelCase
+defmodule AereplServerWeb.ReplSessionChannelTest do
+  use AereplServerWeb.ChannelCase
 
   setup do
     {:ok, _, socket} =
-      socket(AereplHttpWeb.UserSocket, "user_id", %{some: :assign})
-      |> subscribe_and_join(AereplHttpWeb.ReplSessionChannel, "repl_session:lobby")
+      socket(AereplServerWeb.UserSocket, "user_id", %{some: :assign})
+      |> subscribe_and_join(AereplServerWeb.ReplSessionChannel, "repl_session:lobby")
 
     {:ok, socket: socket}
   end

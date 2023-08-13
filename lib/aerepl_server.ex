@@ -1,6 +1,6 @@
-defmodule AereplHttp do
+defmodule AereplServer do
   @moduledoc """
-  AereplHttp keeps the contexts that define your domain
+  AereplServer keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

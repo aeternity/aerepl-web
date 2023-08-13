@@ -1,4 +1,4 @@
-defmodule AereplHttp.SessionData do
+defmodule AereplServer.SessionData do
   @moduledoc """
   User session data.
   """

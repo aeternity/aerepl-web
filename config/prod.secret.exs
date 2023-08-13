@@ -4,7 +4,7 @@
 # remember to add this file to your .gitignore.
 import Config
 
-config :aerepl_http, AereplHttp.Repo,
+config :aerepl_web, AereplServer.Repo,
   # ssl: true,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
@@ -15,7 +15,7 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
-config :aerepl_http, AereplHttpWeb.Endpoint,
+config :aerepl_web, AereplServerWeb.Endpoint,
   http: [
     port: String.to_integer(System.get_env("PORT") || "4000"),
     transport_options: [socket_opts: [:inet6]]

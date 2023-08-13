@@ -40,7 +40,7 @@ jobs:
   docker_push_tag:
     executor: docker_builder
     environment:
-      DOCKERHUB_REPO: aeternity/aerepl_http
+      DOCKERHUB_REPO: aeternity/aerepl_web
     steps:
       - checkout
       - setup_remote_docker:
