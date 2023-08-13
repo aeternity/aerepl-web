@@ -6,47 +6,42 @@ defmodule AereplServer.SessionService do
 
   alias AereplServer.SessionData
 
-
-  def via(session_id) when is_binary(session_id) do
-    {:via, Registry, {AereplServer.SessionRegistry, {__MODULE__, session_id}}}
+  def via(user_id) when is_binary(user_id) do
+    {:via, Registry, {AereplServer.SessionRegistry, {__MODULE__, user_id}}}
   end
 
-
-  def repl_ref(%SessionData{id: session_id}) do
-    {:global, {:aerepl, session_id}}
+  def via_repl(%SessionData{id: session_id}) do
+    via_repl(session_id)
+  end
+  def via_repl(id: session_id) when is_binary(session_id) do
+    {:via, Registry, {AereplServer.ReplRegistry, {__MODULE__, session_id}}}
   end
 
-
-  def child_spec(%SessionData{id: session_id} = session) do
+  def child_spec(user_id) do
     %{
-      id: {__MODULE__, session_id},
-      start: {__MODULE__, :start_link, [session]},
-      restart: :temporary,
+      id: via(user_id),
+      start: {__MODULE__, :start_link, [user_id]},
+      restart: :transient,
     }
   end
 
-
-  def start(session) do
+  def start(user_id) do
     DynamicSupervisor.start_child(
       AereplServer.SessionSupervisor,
-      {__MODULE__, session}
+      child_spec(user_id)
     )
   end
 
-
-  def start_link(%SessionData{id: session_id} = session) do
-    GenServer.start_link(
-      __MODULE__,
-      session,
-      name: via(session_id)
+  def stop(user_id) do
+    DynamicSupervisor.terminate_child(
+      AereplServer.SessionSupervisor,
+      via(user_id)
     )
   end
 
-
-  def end_session(session_id) do
-    GenServer.stop(via(session_id))
+  def terminate(reason, session) do
+    GenServer.stop(repl_ref(session), reason)
   end
-
 
   def init(session) do
     {:ok, _repl} = :aere_gen_server.start_link(repl_ref(session), options: %{:filesystem => {:cached, %{}}})

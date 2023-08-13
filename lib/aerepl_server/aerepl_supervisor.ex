@@ -11,7 +11,11 @@ defmodule AereplServer.AereplSupervisor do
   def init(_init_arg) do
     children = [
       {Registry, name: AereplServer.SessionRegistry, keys: :unique},
-      {DynamicSupervisor, name: AereplServer.SessionSupervisor,  strategy: :one_for_one},
+      {DynamicSupervisor,
+       name: AereplServer.SessionSupervisor,
+       strategy: :one_for_one
+       restart: :transient
+      },
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
