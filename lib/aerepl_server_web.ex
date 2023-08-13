@@ -29,7 +29,7 @@ defmodule AereplServerWeb do
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/aerepl_web_web/templates",
+        root: "lib/aerepl_server_web/templates",
         namespace: AereplServerWeb
 
       # Import convenience functions from controllers

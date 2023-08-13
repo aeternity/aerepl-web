@@ -6,41 +6,61 @@ defmodule AereplServer.SessionService do
 
   alias AereplServer.SessionData
 
-  def via(user_id) when is_binary(user_id) do
-    {:via, Registry, {AereplServer.SessionRegistry, {__MODULE__, user_id}}}
+  def via(client_id) when is_binary(client_id) do
+    {:via, Registry, {AereplServer.SessionRegistry, {__MODULE__, client_id}}}
   end
 
 
-  def via_repl(%SessionData{id: session_id}) do
-    via_repl(session_id)
+  def repl_ref(%SessionData{id: session_id}) do
+    repl_ref(session_id)
   end
 
-  def via_repl(id: session_id) when is_binary(session_id) do
-    {:via, Registry, {AereplServer.ReplRegistry, {__MODULE__, session_id}}}
+  def repl_ref(session_id) when is_binary(session_id) do
+    {:global, {:aerepl, session_id}}
   end
 
 
-  def child_spec(user_id) do
+  def child_spec(client_id) do
     %{
-      id: via(user_id),
-      start: {__MODULE__, :start_link, [user_id]},
+      id: via(client_id),
+      start: {__MODULE__, :start_link, [client_id]},
       restart: :transient,
     }
   end
 
 
-  def start(user_id) do
+  def start(client_id) do
     DynamicSupervisor.start_child(
       AereplServer.SessionSupervisor,
-      child_spec(user_id)
+      child_spec(client_id)
     )
   end
 
+  def start_link(client_id) do
+    IO.inspect("******************** START LINK")
+    GenServer.start_link(
+      __MODULE__,
+      client_id,
+      name: via(client_id)
+    )
+    |> IO.inspect
+  end
 
-  def stop(user_id) do
+
+  def try_start(client_id) do
+    case Registry.lookup(AereplServer.SessionRegistry, {__MODULE__, client_id}) do
+      [] ->
+        start(client_id)
+      _ ->
+        :already_started
+    end
+  end
+
+
+  def stop(client_id) do
     DynamicSupervisor.terminate_child(
       AereplServer.SessionSupervisor,
-      via(user_id)
+      via(client_id)
     )
   end
 
@@ -50,11 +70,12 @@ defmodule AereplServer.SessionService do
   end
 
 
-  def init(user_id) do
-    session = SessionData.new(user_id)
+  def init(client_id) do
+    IO.inspect("******************** INIT")
+    session = SessionData.new(client_id)
 
     {:ok, _repl} = :aere_gen_server.start_link(
-      via_repl(user_id),
+      repl_ref(session),
       options: %{
         :filesystem => {:cached, %{}}
       }
@@ -75,7 +96,7 @@ defmodule AereplServer.SessionService do
     input = String.to_charlist(text)
     output = :aere_gen_server.input(repl, input)
 
-    session = touch(session)
+    session = SessionData.touch(session)
     case output do
       :no_output ->
         {:reply, "ok", session}
@@ -88,15 +109,20 @@ defmodule AereplServer.SessionService do
 
   def handle_call({:repl_load_files, filemap}, _from, session) do
     repl = repl_ref(session)
-
     :ok = :aere_gen_server.update_filesystem_cache(repl, filemap)
-    {:reply, "Updated file cache", touch(session)}
+    {:reply, "Updated file cache", SessionData.touch(session)}
   end
 
-  def handle_call(:banner, _from, session) do
+  def handle_call(:repl_banner, _from, session) do
     repl = repl_ref(session)
     banner = :aere_gen_server.banner(repl)
-    {:reply, List.to_string(banner), touch(session)}
+    {:reply, List.to_string(banner), SessionData.touch(session)}
+  end
+
+  def handle_call(:repl_prompt, _from, session) do
+    repl = repl_ref(session)
+    prompt = :aere_gen_server.prompt(repl)
+    {:reply, List.to_string(prompt), SessionData.touch(session)}
   end
 
 
@@ -108,33 +134,45 @@ defmodule AereplServer.SessionService do
     end
   end
 
+  def handle_cast({:schedule_timeout_check, client_id}, session) do
+    now = DateTime.utc_now()
+    delay = Time.to_seconds_after_midnight(session.timeout) * 1000
+
+    spawn_link(fn() ->
+      Process.sleep(delay)
+      GenServer.cast(self(), :timeout_check)
+    end)
+  end
+
 
   ### API
 
   def repl_input_text(client_id, text) do
+    schedule_timeout_check(client_id)
     GenServer.call(via(client_id), {:repl_input_text, text})
   end
 
 
   def repl_load_files(client_id, filemap) do
+    schedule_timeout_check(client_id)
     GenServer.call(via(client_id), {:repl_load_files, filemap})
   end
 
 
   def repl_banner(client_id) do
+    schedule_timeout_check(client_id)
     GenServer.call(via(client_id), :repl_banner)
   end
 
 
   def repl_prompt(client_id) do
+    schedule_timeout_check(client_id)
     GenServer.call(via(client_id), :repl_prompt)
   end
 
-
-  def timeout_check(client_id) do
+  def schedule_timeout_check(client_id) do
     GenServer.cast(via(client_id), :timeout_check)
   end
-
 
   ### Helpers
 
@@ -142,11 +180,5 @@ defmodule AereplServer.SessionService do
     theme = :aere_theme.empty_theme()
 
     List.to_string(:aere_theme.render(theme, resp))
-  end
-
-
-  def touch(session) do
-    now = DateTime.utc_now()
-    spawn_link(fn() -> GenServer.cast(via(session.client_id)) end)
   end
 end

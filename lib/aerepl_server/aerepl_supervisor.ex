@@ -13,7 +13,7 @@ defmodule AereplServer.AereplSupervisor do
       {Registry, name: AereplServer.SessionRegistry, keys: :unique},
       {DynamicSupervisor,
        name: AereplServer.SessionSupervisor,
-       strategy: :one_for_one
+       strategy: :one_for_one,
        restart: :transient
       },
     ]

@@ -2,8 +2,8 @@ defmodule AereplServer.Application do
   use Application
 
   def load_paths() do
-    for path <- Path.wildcard("deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin"),
-      do: Code.append_path(path)
+    # for path <- Path.wildcard("deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin"),
+    #   do: Code.append_path(path)
   end
 
   def start(_type, _args) do
