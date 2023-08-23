@@ -3,14 +3,14 @@ defmodule AereplServer.Application do
 
   def load_paths() do
     # TODO: wtf fix this
-    for path <- Path.wildcard("/home/radek/Programming/ae/aerepl_http/deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin"),
+    {:ok, cwd} = File.cwd
+    for path <- Path.wildcard(cwd <> "/deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin"),
       do: :true = :code.add_path(String.to_charlist(path)) #Code.append_path(path)
 
     # :ok = Application.load(:syntax_tools)
     # :ok = Application.load(:goldrush)
     # :ok = Application.load(:lager)
 
-    :ok = Application.load(:sext)
     :ok = Application.load(:aechannel)
     :ok = Application.load(:aecontract)
     :ok = Application.load(:aecore)
@@ -20,7 +20,7 @@ defmodule AereplServer.Application do
     :ok = Application.load(:aeprimop)
     :ok = Application.load(:aetx)
     :ok = Application.load(:aeutils)
-    :ok = Application.load(:setup)
+    # :ok = Application.load(:setup)
 
     # :ok = Application.start(:goldrush)
     # :ok = Application.start(:lager)
@@ -36,11 +36,11 @@ defmodule AereplServer.Application do
     # :ok = Application.start(:setup)
 
     :ok = Application.load(:aerepl)
-    :ok = Application.ensure_all_started(:aerepl)
+    {:ok, _} = Application.ensure_all_started(:aerepl)
 
     IO.inspect("************************ " <> Application.app_dir(:aerepl))
 
-    :ok = Application.start(:aerepl)
+    :ok = Application.ensure_started(:aerepl)
 
     IO.inspect(:code.get_path)
   end

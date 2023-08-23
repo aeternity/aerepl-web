@@ -24,12 +24,12 @@ RUN git clone https://github.com/asdf-vm/asdf.git /asdf --branch v0.10.2 \
     && asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git \
     && asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
 
-RUN asdf install erlang 25.0 \
-    && asdf global erlang 25.0 \
+RUN asdf install erlang 24.0 \
+    && asdf global erlang 24.0 \
     && asdf install elixir 1.13.2 \
     && asdf global elixir 1.13.2
 
-ENV PATH /root/.asdf/installs/elixir/1.13.2/bin/:/root/.asdf/installs/erlang/25.0/bin/:${PATH}
+ENV PATH /root/.asdf/installs/elixir/1.13.2/bin/:/root/.asdf/installs/erlang/24.0/bin/:${PATH}
 
 # Set the locale
 RUN locale-gen en_US.UTF-8

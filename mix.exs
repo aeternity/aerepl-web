@@ -5,7 +5,7 @@ defmodule AereplServer.MixProject do
     [
       app: :aerepl_web,
       version: "2.2.0",
-      elixir: "~> 1.13.2",
+      elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -53,9 +53,11 @@ defmodule AereplServer.MixProject do
       {:dogma, "~> 0.1", only: [:dev]},
       {:telemetry, "~> 1.1.0"},
       {:uuid, "~> 1.1"},
-      {:jobs, "~> 0.7"},
+      {:jobs, "~> 0.9"},
+      {:parse_trans, "~> 3.4.1", override: :true},
       {:folsom, "~> 1.0.0"},
       {:exometer_core, "~> 1.6.0"},
+      {:sext, "~> 1.8.0"},
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",
