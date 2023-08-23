@@ -14,7 +14,14 @@ defmodule AereplServer.MixProject do
       releases: [
         app: [
           include_executables_for: [:unix],
-          applications: [runtime_tools: :permanent]
+          applications:
+          [runtime_tools: :permanent,
+           syntax_tools: :none,
+           goldrush: :none,
+           lager: :none,
+           gproc: :none,
+           setup: :none,
+          ]
         ]
       ]
     ]
@@ -32,7 +39,7 @@ defmodule AereplServer.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "deps/aerepl/_build/prod/rel/aerepl/lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
     [
@@ -46,23 +53,18 @@ defmodule AereplServer.MixProject do
       {:dogma, "~> 0.1", only: [:dev]},
       {:telemetry, "~> 1.1.0"},
       {:uuid, "~> 1.1"},
+      {:jobs, "~> 0.7"},
+      {:folsom, "~> 1.0.0"},
+      {:exometer_core, "~> 1.6.0"},
 
-      { :aebytecode,
-        git: "https://github.com/aeternity/aebytecode.git",
-        tag: "v3.3.0",
-        compile: "make",
-        manager: :rebar3,
-        override: true
-      },
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",
         # tag: "v3.0.0",
         branch: "fs-cache",
         app: false,
         compile: "make",
-        manager: :rebar3,
+        manager: :make,
       }
-
     ]
   end
 

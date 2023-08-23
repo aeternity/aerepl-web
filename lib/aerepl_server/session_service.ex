@@ -71,7 +71,6 @@ defmodule AereplServer.SessionService do
 
 
   def init(client_id) do
-    IO.inspect("******************** INIT")
     session = SessionData.new(client_id)
 
     {:ok, _repl} = :aere_gen_server.start_link(
@@ -135,7 +134,6 @@ defmodule AereplServer.SessionService do
   end
 
   def handle_cast({:schedule_timeout_check, client_id}, session) do
-    now = DateTime.utc_now()
     delay = Time.to_seconds_after_midnight(session.timeout) * 1000
 
     spawn_link(fn() ->
