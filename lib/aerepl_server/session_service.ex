@@ -175,7 +175,7 @@ defmodule AereplServer.SessionService do
   ### Helpers
 
   def render(resp) do
-    theme = :aere_theme.empty_theme()
+    theme = :aere_theme.default_theme()
 
     List.to_string(:aere_theme.render(theme, resp))
   end
