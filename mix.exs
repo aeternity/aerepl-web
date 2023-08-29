@@ -65,8 +65,7 @@ defmodule AereplServer.MixProject do
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        # tag: "v3.0.0",
-        branch: "fs-cache",
+        branch: "master",
         app: false,
         compile: "make",
         manager: :make,
