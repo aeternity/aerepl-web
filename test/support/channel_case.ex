@@ -1,4 +1,4 @@
-defmodule AereplHttpWeb.ChannelCase do
+defmodule AereplServerWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -11,7 +11,7 @@ defmodule AereplHttpWeb.ChannelCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use AereplHttpWeb.ChannelCase, async: true`, although
+  by setting `use AereplServerWeb.ChannelCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -23,15 +23,15 @@ defmodule AereplHttpWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint AereplHttpWeb.Endpoint
+      @endpoint AereplServerWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AereplHttp.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AereplServer.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(AereplHttp.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(AereplServer.Repo, {:shared, self()})
     end
 
     :ok

@@ -1,14 +1,17 @@
-# AEREPL HTTP
+# æREPL-web
 
 ## Description
-**AEREPL HTTP** is a simple web application, which provides an interface to [AEREPL](https://github.com/aeternity/aerepl), which stands for [Read Eval Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop), which allows executing [Æternity Sophia Smart Contract Language](https://github.com/aeternity/aesophia/blob/lima/docs/sophia.md) in an interactive way.
+**æREPL-web** is a web interface to [æREPL](https://github.com/aeternity/aerepl)
+which allows executing [æternity Sophia Smart Contract
+Language](https://github.com/aeternity/aesophia/blob/lima/docs/sophia.md)
+interactively through Elixir channels.
 
 ## Setup
 
 - Clone the project and get the dependencies:
 ```
-git clone https://github.com/aeternity/aerepl_http
-cd aerepl_http && mix deps.get
+git clone https://github.com/aeternity/aerepl-web
+cd aerepl-web && mix deps.get
 ```
 - Update the environment:
 ```

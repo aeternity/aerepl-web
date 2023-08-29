@@ -65,7 +65,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: aeternitybot/aerepl_http
+          images: aeternitybot/aerepl_web
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'master') }}
             type=raw,value=master,enable=${{ endsWith(GitHub.ref, 'master') }}

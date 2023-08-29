@@ -1,16 +1,16 @@
 use Mix.Config
 
 # Configure your database
-config :aerepl_http, AereplHttp.Repo,
+config :aerepl_web, AereplServer.Repo,
   username: "postgres",
   password: "postgres",
-  database: "aerepl_http_test",
+  database: "aerepl_web_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :aerepl_http, AereplHttpWeb.Endpoint,
+config :aerepl_web, AereplServerWeb.Endpoint,
   http: [port: 4002],
   server: false
 

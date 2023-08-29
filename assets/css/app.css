@@ -28,16 +28,21 @@
     padding-left: 30px;
 }
 
+#user-input {
+    white-space: pre-wrap;
+}
+
 .code {
     font-family: "Lucida Console", Monaco, monospace;
-    white-space: pre-wrap;
     line-height: 1;
 }
 
-.code li.in:before {
-    content: 'AESO>';
-    margin-left: -20px;
-    margin-right: 10px;
+#outputs-block {
+    white-space: pre-wrap;
+}
+
+#prompt {
+    white-space: pre;
 }
 .code li.out:before {
     content: ' ';
