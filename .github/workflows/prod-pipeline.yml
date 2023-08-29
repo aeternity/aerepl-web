@@ -9,7 +9,7 @@ on:
 
 env:
   ENV: "prd"
-  APP: "aerepl-http"
+  APP: "aerepl-web"
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASS }}
-      
+
       - name: Get commit sha on push
         if: github.event_name == 'push'
         id: git-sha
@@ -110,7 +110,7 @@ jobs:
           url-prefix: ${{ steps.release.outputs.tag_name }}
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
-      
+
       - name: Latest Master Deploy on Push
         if: github.event_name == 'push'
         uses: aeternity/ae-github-actions/argocd-pr-sync@v4
