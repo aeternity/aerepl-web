@@ -30,14 +30,12 @@
 
 .code {
     font-family: "Lucida Console", Monaco, monospace;
-    white-space: pre-wrap;
+    white-space: pre-line;
     line-height: 1;
 }
 
-.code li.in:before {
-    content: 'AESO>';
-    margin-left: -20px;
-    margin-right: 10px;
+#prompt {
+    white-space: normal;
 }
 .code li.out:before {
     content: ' ';

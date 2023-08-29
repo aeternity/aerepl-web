@@ -16,11 +16,11 @@ defmodule AereplServer.MixProject do
           include_executables_for: [:unix],
           applications:
           [runtime_tools: :permanent,
-           syntax_tools: :none,
-           goldrush: :none,
-           lager: :none,
-           gproc: :none,
-           setup: :none,
+           syntax_tools: :permanent,
+           goldrush: :permanent,
+           lager: :permanent,
+           gproc: :permanent,
+           setup: :permanent,
           ]
         ]
       ]
@@ -58,6 +58,10 @@ defmodule AereplServer.MixProject do
       {:folsom, "~> 1.0.0"},
       {:exometer_core, "~> 1.6.0"},
       {:sext, "~> 1.8.0"},
+      {:goldrush, "~> 0.1.9"},
+      {:lager, "~> 3.9.2"},
+      {:gproc, "~> 0.9.0"},
+      # {:setup, "~> 2.1.0"},
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",

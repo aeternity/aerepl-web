@@ -10,6 +10,7 @@ socket.connect();
 
 let channel = socket.channel("repl_session:lobby", {});
 
+let currentPrompt       = document.getElementById("prompt");
 let queryInput          = document.getElementById("query-input");
 let outputContainer     = document.getElementById("outputs");
 
@@ -21,11 +22,12 @@ let loadButton          = document.getElementById("load");
 
 var session = null;
 
-
 function submitQuery() {
     let query = queryInput.value.trim();
+    let prompt = currentPrompt.innerText + "> ";
+
     let messageItem = document.createElement("li");
-    messageItem.innerText = query;
+    messageItem.innerText = prompt + query;
     messageItem.classList.add("in");
     outputContainer.appendChild(messageItem);
 
@@ -54,6 +56,20 @@ function loadFiles() {
                          });
 }
 
+function log_response(msg) {
+    let messageItem = document.createElement("li");
+    let content_str = ansi.ansi_to_html(msg);
+    messageItem.innerHTML = content_str;
+    messageItem.classList.add("out");
+    outputContainer.appendChild(messageItem);
+}
+
+function update_prompt(prompt) {
+    let prompt_text = prompt + "> ";
+    currentPrompt.innerText = prompt_text;
+    queryInput.placeholder = prompt_text;
+}
+
 newlineButton.addEventListener('click', insertNewLine, false);
 submitButton.addEventListener('click', submitQuery, false);
 loadButton.addEventListener('click', loadFiles, false);
@@ -66,28 +82,30 @@ queryInput.addEventListener("keypress", event => {
 
 channel.on("response", payload => {
     var msg = payload.msg;
-    console.log(msg);
+    var last_prompt = currentPrompt.innerText;
+    var prompt = payload.prompt ? payload.prompt : last_prompt;
     session = payload.user_session ? payload.user_session : session;
     msg = payload.msg.replace(/^\n|\n$/g, '');
-    if(msg !== "") {
-        console.log(msg)
-        let messageItem = document.createElement("li");
-        // let content = document.createElement("template");
-        let content_str = ansi.ansi_to_html(msg);
-        console.log(content_str)
-        messageItem.innerHTML = content_str;
-        // messageItem.appendChild(content);
-        messageItem.classList.add("out");
-        outputContainer.appendChild(messageItem);
+    if(msg) {
+        log_response(msg);
+    }
+    if(prompt) {
+        update_prompt(prompt);
     }
 });
 
 channel.onError( () => alert("Channel error.") );
-channel.onClose( () => alert("The channel has been closed. Please refresh to start a new session.") );
+channel.onClose( () => {
+    update_prompt("(CLOSED)");
+    alert("The channel has been closed. Please refresh to start a new session.");
+});
 
 
 channel.join()
     .receive("ok", resp => { console.log("Joined aerepl lobby."); })
-    .receive("error", resp => { alert("Could not establish the connection.") });
+    .receive("error", resp => {
+        update_prompt("(CHANNEL ERROR)");
+        alert("Could not establish the connection.");
+    });
 
 export default socket;

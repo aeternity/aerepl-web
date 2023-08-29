@@ -16,8 +16,9 @@ defmodule AereplServerWeb.ReplSessionChannel do
 
   def handle_in("query", %{"input" => input, "user_session" => client_id}, socket) do
     out = AereplServer.SessionService.repl_input_text(client_id, input)
+    prompt = AereplServer.SessionService.repl_prompt(client_id)
 
-    resp = %{"msg" => out}
+    resp = %{"msg" => out, "prompt" => prompt}
     push(socket, "response", resp)
 
     {:noreply, socket}
@@ -29,8 +30,9 @@ defmodule AereplServerWeb.ReplSessionChannel do
       do: {String.to_charlist(filename), content}
 
     out = AereplServer.SessionService.repl_load_files(client_id, filemap)
+    prompt = AereplServer.SessionService.repl_prompt(client_id)
 
-    resp = %{"msg" => out}
+    resp = %{"msg" => out, "prompt" => prompt}
     push(socket, "response", resp)
 
     {:noreply, socket}
@@ -49,7 +51,8 @@ defmodule AereplServerWeb.ReplSessionChannel do
     SessionService.try_start(client_id)
 
     msg = SessionService.repl_banner(client_id)
-    resp = %{"msg" => msg, "user_session" => client_id}
+    prompt = AereplServer.SessionService.repl_prompt(client_id)
+    resp = %{"msg" => msg, "user_session" => client_id, "prompt" => prompt}
     push(socket, "response", resp)
     {:noreply, socket}
 end

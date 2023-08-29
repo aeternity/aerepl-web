@@ -37,13 +37,11 @@ defmodule AereplServer.SessionService do
   end
 
   def start_link(client_id) do
-    IO.inspect("******************** START LINK")
     GenServer.start_link(
       __MODULE__,
       client_id,
       name: via(client_id)
     )
-    |> IO.inspect
   end
 
 
@@ -176,7 +174,6 @@ defmodule AereplServer.SessionService do
 
   def render(resp) do
     theme = :aere_theme.default_theme()
-
     List.to_string(:aere_theme.render(theme, resp))
   end
 end

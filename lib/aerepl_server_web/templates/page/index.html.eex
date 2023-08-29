@@ -6,6 +6,7 @@
             <ul id="outputs"></ul>
 
             <div>
+                <span id="prompt">Loading prompt...</span>
                 <textarea id="query-input" autocomplete="off" rows="1"></textarea>
 
                 <div id="buttons" class="row phone-only">

@@ -4,12 +4,9 @@ defmodule AereplServer.Application do
   def load_paths() do
     # TODO: wtf fix this
     {:ok, cwd} = File.cwd
-    for path <- Path.wildcard(cwd <> "/deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin"),
-      do: :true = :code.add_path(String.to_charlist(path)) #Code.append_path(path)
-
-    # :ok = Application.load(:syntax_tools)
-    # :ok = Application.load(:goldrush)
-    # :ok = Application.load(:lager)
+    for path <- Path.wildcard(cwd <> "/deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin/") do
+      :true = :code.add_path(String.to_charlist(path))
+    end
 
     :ok = Application.load(:aechannel)
     :ok = Application.load(:aecontract)
@@ -20,29 +17,23 @@ defmodule AereplServer.Application do
     :ok = Application.load(:aeprimop)
     :ok = Application.load(:aetx)
     :ok = Application.load(:aeutils)
-    # :ok = Application.load(:setup)
 
-    # :ok = Application.start(:goldrush)
-    # :ok = Application.start(:lager)
-    # :ok = Application.start(:aechannel)
-    # :ok = Application.start(:aecontract)
-    # :ok = Application.start(:aecore)
-    # :ok = Application.start(:aefate)
-    # :ok = Application.start(:aens)
-    # :ok = Application.start(:aeoracle)
-    # :ok = Application.start(:aeprimop)
-    # :ok = Application.start(:aetx)
-    # :ok = Application.start(:aeutils)
-    # :ok = Application.start(:setup)
+    for path <- Path.wildcard(cwd <> "/deps/aerepl/_build/prod/rel/aerepl/lib/*/ebin/") do
+      :true = :code.add_path(String.to_charlist(path))
+      for mod_file <- Path.wildcard(path <> "/*.beam") do
+        mod = String.to_atom(Path.rootname(Path.basename(mod_file)))
+        if :code.module_status(mod) != :loaded do
+          try do
+            :code.load_file(mod)
+          rescue
+            _ in RuntimeError ->
+              IO.inspect({:module_not_loaded, mod})
+          end
+        end
+      end
+    end
 
-    :ok = Application.load(:aerepl)
-    {:ok, _} = Application.ensure_all_started(:aerepl)
-
-    IO.inspect("************************ " <> Application.app_dir(:aerepl))
-
-    :ok = Application.ensure_started(:aerepl)
-
-    IO.inspect(:code.get_path)
+    Application.ensure_all_started(:aerepl)
   end
 
   def start(_type, _args) do
