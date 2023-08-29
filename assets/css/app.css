@@ -28,14 +28,21 @@
     padding-left: 30px;
 }
 
+#user-input {
+    white-space: pre-wrap;
+}
+
 .code {
     font-family: "Lucida Console", Monaco, monospace;
-    white-space: pre-line;
     line-height: 1;
 }
 
+#outputs-block {
+    white-space: pre-wrap;
+}
+
 #prompt {
-    white-space: normal;
+    white-space: pre;
 }
 .code li.out:before {
     content: ' ';
