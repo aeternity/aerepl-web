@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0](https://github.com/aeternity/aerepl-web/compare/v3.0.1...v3.1.0) (2023-08-30)
+
+
+### Features
+
+* bump version, trigger release please ([9516705](https://github.com/aeternity/aerepl-web/commit/95167053c567a81fda545f221cc236f8f21efdf9))
+
+
+### Bug Fixes
+
+* nodejs build ([7621a94](https://github.com/aeternity/aerepl-web/commit/7621a942837ceba2c131e2450475849cff489d23))
+
 ## [2.2.0](https://github.com/aeternity/aerepl_web/compare/v2.1.3...v2.2.0) (2022-09-14)
 
 
