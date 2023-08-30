@@ -4,7 +4,7 @@ defmodule AereplServer.MixProject do
   def project do
     [
       app: :aerepl_web,
-      version: "3.0.2",
+      version: "3.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
