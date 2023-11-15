@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/aeternity/aerepl-web/compare/v3.1.0...v3.1.1) (2023-11-15)
+
+
+### CI / CD
+
+* Switch to shared GHA ([#59](https://github.com/aeternity/aerepl-web/issues/59)) ([1194a09](https://github.com/aeternity/aerepl-web/commit/1194a09ac10a17161854c44f2bd3ed791f4b42d1))
+
 ## [3.1.0](https://github.com/aeternity/aerepl-web/compare/v3.0.1...v3.1.0) (2023-08-30)
 
 
