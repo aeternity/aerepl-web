@@ -15,13 +15,15 @@ defmodule AereplServerWeb.ReplSessionChannel do
 
 
   def handle_in("query", %{"input" => input, "user_session" => client_id}, socket) do
+    IO.inspect("QUERY")
     out = AereplServer.SessionService.repl_input_text(client_id, input)
     prompt = AereplServer.SessionService.repl_prompt(client_id)
 
     resp = %{"msg" => out, "prompt" => prompt}
-    push(socket, "response", resp)
+#    push(socket, "response", resp)
 
-    {:noreply, socket}
+    IO.inspect("REPLY " <> out)
+    {:reply, {:ok, resp}, socket}
   end
 
   def handle_in("load", %{"files" => files, "user_session" => client_id}, socket) do
@@ -38,6 +40,9 @@ defmodule AereplServerWeb.ReplSessionChannel do
     {:noreply, socket}
   end
 
+  def handle_in(t, p, socket) do
+    IO.inspect("WTF " <> t)
+  end
 
   def handle_info({:init, payload}, socket) do
     client_id =

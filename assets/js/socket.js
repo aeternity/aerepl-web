@@ -22,6 +22,20 @@ let loadButton          = document.getElementById("load");
 
 var session = null;
 
+function handle_response(payload) {
+    var msg = payload.msg;
+    var last_prompt = currentPrompt.innerText;
+    var prompt = payload.prompt ? payload.prompt : last_prompt;
+    session = payload.user_session ? payload.user_session : session;
+    msg = payload.msg.replace(/^\n|\n$/g, '');
+    if(msg) {
+        log_response(msg);
+    }
+    if(prompt) {
+        update_prompt(prompt);
+    }
+}
+
 function submitQuery() {
     let query = queryInput.value.trim();
     let prompt = currentPrompt.innerText + "> ";
@@ -33,7 +47,8 @@ function submitQuery() {
 
     channel.push("query", {input: query,
                            user_session: session
-                          });
+                          })
+        .receive("ok", handle_response);
     queryInput.value = "";
 }
 
@@ -81,17 +96,7 @@ queryInput.addEventListener("keypress", event => {
 });
 
 channel.on("response", payload => {
-    var msg = payload.msg;
-    var last_prompt = currentPrompt.innerText;
-    var prompt = payload.prompt ? payload.prompt : last_prompt;
-    session = payload.user_session ? payload.user_session : session;
-    msg = payload.msg.replace(/^\n|\n$/g, '');
-    if(msg) {
-        log_response(msg);
-    }
-    if(prompt) {
-        update_prompt(prompt);
-    }
+    handle_response(payload)
 });
 
 channel.onError( () => alert("Channel error.") );

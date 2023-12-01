@@ -59,7 +59,8 @@ WORKDIR /app
 # Setup the server
 
 ENV MIX_ENV prod
-RUN bash -l -c 'echo export SECRET_KEY_BASE="$(openssl rand -hex 64)" >> /etc/profile.d/aerepl-web.sh'
+RUN mkdir -p /etc/profile.d \
+    && bash -l -c 'echo export SECRET_KEY_BASE="$(openssl rand -hex 64)" >> /etc/profile.d/aerepl-web.sh'
 ENV CXXFLAGS "-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"
 
 RUN mix local.rebar --force \
@@ -71,15 +72,12 @@ RUN source /etc/profile.d/aerepl-web.sh \
 
 WORKDIR /app/assets
 RUN source /etc/profile.d/aerepl-web.sh \
-    && NODE_ENV=production \
     && npm install \
     && npm run deploy \
-    && node node_modules/webpack/bin/webpack.js --mode production \
-    && cd /app \
-    && mix phx.digest
+    && node node_modules/webpack/bin/webpack.js --mode production
 
 WORKDIR /app
-
+RUN mix phx.digest
 RUN mix release
 
 CMD _build/prod/rel/app/bin/app start
