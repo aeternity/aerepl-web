@@ -4,7 +4,7 @@ defmodule AereplServer.MixProject do
   def project do
     [
       app: :aerepl_web,
-      version: "3.1.1",
+      version: "3.2.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
@@ -65,7 +65,8 @@ defmodule AereplServer.MixProject do
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        ref: "34c7e4f",
+        # tag: "v3.1.1",
+        branch: "value-return",
         app: false,
         compile: "make",
         manager: :make,

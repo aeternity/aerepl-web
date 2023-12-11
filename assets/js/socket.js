@@ -22,7 +22,9 @@ let loadButton          = document.getElementById("load");
 
 var session = null;
 
+
 function handle_response(payload) {
+    console.log("Received response.", payload.msg);
     var msg = payload.msg;
     var last_prompt = currentPrompt.innerText;
     var prompt = payload.prompt ? payload.prompt : last_prompt;
@@ -95,10 +97,6 @@ queryInput.addEventListener("keypress", event => {
     }
 });
 
-channel.on("response", payload => {
-    handle_response(payload)
-});
-
 channel.onError( () => alert("Channel error.") );
 channel.onClose( () => {
     update_prompt("(CLOSED)");
@@ -107,7 +105,15 @@ channel.onClose( () => {
 
 
 channel.join()
-    .receive("ok", resp => { console.log("Joined aerepl lobby."); })
+    .receive("ok", resp => {
+        console.log("Joined aerepl lobby.");
+        session = resp.user_session;
+        console.log("Session: ", session);
+        channel.push("banner", {user_session: session})
+            .receive("ok", handle_response);
+        console.log("Session established.");
+
+    })
     .receive("error", resp => {
         update_prompt("(CHANNEL ERROR)");
         alert("Could not establish the connection.");

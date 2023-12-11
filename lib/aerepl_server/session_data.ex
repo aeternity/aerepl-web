@@ -14,6 +14,7 @@ defmodule AereplServer.SessionData do
 
     struct(__MODULE__, [
           id: UUID.uuid4(),
+          client_id: client_id,
           start: DateTime.utc_now(),
           last_interaction: DateTime.utc_now(),
           timeout: timeout
