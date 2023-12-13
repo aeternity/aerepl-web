@@ -86,12 +86,10 @@ defmodule AereplServer.SessionService do
   end
 
   def handle_call({:repl, data}, _from, session) do
-    IO.inspect "Calling repl"
     session = SessionData.touch(session)
 
     repl = repl_ref(session)
     output = GenServer.call(repl, data)
-    IO.inspect {"Got reply", output}
 
     case output do
       {:error, e} ->

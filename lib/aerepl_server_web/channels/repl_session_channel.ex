@@ -49,8 +49,6 @@ defmodule AereplServerWeb.ReplSessionChannel do
   def handle_in("query", %{"input" => input, "user_session" => client_id}, socket) do
     output = AereplServer.SessionService.repl_input_text(client_id, input)
 
-    IO.inspect output
-
     prompt =
       case output do
         :finish -> "Bye!"
@@ -70,6 +68,7 @@ defmodule AereplServerWeb.ReplSessionChannel do
         {:stop, {:shutdown, :closed},
          {:ok, %{"msg" => "bye!", "prompt" => prompt}}, socket}
       {:error, msg} ->
+        # TODO This should not return :ok
         {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
     end
   end
@@ -106,11 +105,12 @@ defmodule AereplServerWeb.ReplSessionChannel do
   end
 
   def handle_in("load", %{"user_session" => client_id, "files" => files}, socket) do
-    repl_cast(client_id, {:load, files}, socket)
+    files = for file <- files, do: String.to_charlist(file)
+    repl_call(client_id, {:load, files}, socket)
   end
 
   def handle_in("reload", %{"user_session" => client_id, "files" => files}, socket) do
-    repl_cast(client_id, {:reload, files}, socket)
+    repl_call(client_id, {:reload, files}, socket)
   end
 
   def handle_in("update_filesystem_cache", %{"user_session" => client_id, "files" => files}, socket) do
@@ -189,9 +189,10 @@ defmodule AereplServerWeb.ReplSessionChannel do
     repl_call(client_id, :banner, socket)
   end
 
-  def handle_in(t, p, _socket) do
+  def handle_in(t, p, socket) do
     IO.inspect("Unknown message `" <> t <> "`:")
     IO.inspect(p)
+    {:noreply, socket}
   end
 
 

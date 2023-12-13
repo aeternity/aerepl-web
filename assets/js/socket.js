@@ -45,7 +45,6 @@ function disableInput() {
 
 function handle_response(payload) {
     console.log("Received response.");
-    console.log(payload.msg);
     var msg = payload.msg;
     var last_prompt = currentPrompt.innerText;
     var prompt = payload.prompt ? payload.prompt : last_prompt;
@@ -94,11 +93,16 @@ function loadFiles() {
     if(disabled) return;
 
     let contract = contractEditor.value;
-    channel.push("load", {files: [{filename: "contract.aes",
-                                   content: contract
-                                  }],
-                          user_session: session
-                         });
+    channel.push("update_files",
+                 {files: [{filename: "contract.aes",
+                           content: contract
+                          }],
+                  user_session: session
+                 });
+    channel.push("load",
+                 {files: ["contract.aes"],
+                  user_session: session
+                 });
 }
 
 function log_response(msg) {
@@ -132,7 +136,7 @@ channel.onError( (e) => {
 });
 channel.onClose( () => {
     console.log("Channel closed");
-    update_prompt("END");
+    update_prompt("(CLOSED)");
     disableInput();
 });
 
