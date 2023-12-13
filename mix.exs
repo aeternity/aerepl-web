@@ -61,7 +61,6 @@ defmodule AereplServer.MixProject do
       {:goldrush, "~> 0.1.9"},
       {:lager, "~> 3.9.2"},
       {:gproc, "~> 0.9.0"},
-      # {:setup, "~> 2.1.0"},
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",

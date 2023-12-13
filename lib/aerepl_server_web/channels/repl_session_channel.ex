@@ -23,21 +23,21 @@ defmodule AereplServerWeb.ReplSessionChannel do
   end
 
   def repl_call(client_id, data, socket) do
-    repl_call(client_id, data, socket, fn X -> X end)
+    repl_call(client_id, data, socket, fn x -> x end)
   end
   def repl_call(client_id, data, socket, cont) do
     # TODO: This should return raw data, not rendered.
     # 1. Change opts return_mode to value
     # 2. Add feature to call with different opts
     output = SessionService.repl_call(client_id, data)
-    prompt = AereplServer.SessionService.repl_prompt(client_id)
+    {:ok, prompt} = AereplServer.SessionService.repl_prompt(client_id)
     resp = %{"msg" => cont.(output), "prompt" => prompt}
     {:reply, {:ok, resp}, socket}
   end
 
   def repl_call_render(client_id, data, socket) do
     output = SessionService.repl_call_render(client_id, data)
-    {:reply, output, socket}
+    {:reply, {:ok, output}, socket}
   end
 
   def repl_cast(client_id, data, socket) do
@@ -47,12 +47,31 @@ defmodule AereplServerWeb.ReplSessionChannel do
 
 
   def handle_in("query", %{"input" => input, "user_session" => client_id}, socket) do
-    out = AereplServer.SessionService.repl_input_text(client_id, input)
-    prompt = AereplServer.SessionService.repl_prompt(client_id)
+    output = AereplServer.SessionService.repl_input_text(client_id, input)
 
-    resp = %{"msg" => out, "prompt" => prompt}
+    IO.inspect output
 
-    {:reply, {:ok, resp}, socket}
+    prompt =
+      case output do
+        :finish -> "Bye!"
+        _ ->
+          {:ok, p} = AereplServer.SessionService.repl_prompt(client_id)
+          p
+      end
+
+    case output do
+      msg when is_binary(msg) ->
+        {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
+      {:ok, msg} ->
+        {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
+      :ok ->
+        {:reply, {:ok, %{"msg" => "", "prompt" => prompt}}, socket}
+      :finish ->
+        {:stop, {:shutdown, :closed},
+         {:ok, %{"msg" => "bye!", "prompt" => prompt}}, socket}
+      {:error, msg} ->
+        {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
+    end
   end
 
   def handle_in("update_files", %{"files" => files, "user_session" => client_id}, socket) do
@@ -162,16 +181,12 @@ defmodule AereplServerWeb.ReplSessionChannel do
     repl_call(client_id, :stacktrace, socket)
   end
 
+  def handle_in("version", %{"user_session" => client_id}, socket) do
+    repl_call(client_id, :version, socket)
+  end
+
   def handle_in("banner", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :banner, socket, &(List.to_string(&1)))
-  end
-
-  def handle_in("input", %{"user_session" => client_id, "input" => input}, socket) do
-    repl_call(client_id, {:input, input}, socket)
-  end
-
-  def handle_in("prompt", %{"user_session" => client_id}, socket) do
-    repl_call_render(client_id, :prompt, socket)
+    repl_call(client_id, :banner, socket)
   end
 
   def handle_in(t, p, _socket) do

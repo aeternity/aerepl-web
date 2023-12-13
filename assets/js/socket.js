@@ -5,10 +5,8 @@ import {Socket} from "phoenix";
 var AU = require('ansi_up');
 var ansi = new AU.default;
 
-let socket = new Socket("/socket", {params: {token: window.userToken}});
-socket.connect();
-
-let channel = socket.channel("repl_session:lobby", {});
+var disabled = true;
+var session = null;
 
 let currentPrompt       = document.getElementById("prompt");
 let queryInput          = document.getElementById("query-input");
@@ -20,11 +18,34 @@ let submitButton        = document.getElementById("submit");
 let contractEditor      = document.getElementById("editor");
 let loadButton          = document.getElementById("load");
 
-var session = null;
+disableInput();
 
+let socket = new Socket("/socket", {params: {token: window.userToken}});
+socket.connect();
+
+let channel = socket.channel("repl_session:lobby", {});
+
+function enableInput() {
+    queryInput.disabled = false;
+    newlineButton.disabled = false;
+    submitButton.disabled = false;
+    contractEditor.disabled = false;
+    loadButton.disabled = false;
+    disabled = false;
+}
+
+function disableInput() {
+    queryInput.disabled = true;
+    newlineButton.disabled = true;
+    submitButton.disabled = true;
+    contractEditor.disabled = true;
+    loadButton.disabled = true;
+    disabled = true;
+}
 
 function handle_response(payload) {
-    console.log("Received response.", payload.msg);
+    console.log("Received response.");
+    console.log(payload.msg);
     var msg = payload.msg;
     var last_prompt = currentPrompt.innerText;
     var prompt = payload.prompt ? payload.prompt : last_prompt;
@@ -39,6 +60,8 @@ function handle_response(payload) {
 }
 
 function submitQuery() {
+    if(disabled) return;
+
     let query = queryInput.value.trim();
     let prompt = currentPrompt.innerText + "> ";
 
@@ -47,14 +70,17 @@ function submitQuery() {
     messageItem.classList.add("in");
     outputContainer.appendChild(messageItem);
 
-    channel.push("query", {input: query,
+    var t =channel.push("query", {input: query,
                            user_session: session
                           })
-        .receive("ok", handle_response);
+        .receive("ok", handle_response)
+        .receive("error", handle_response); // TODO why isn't this working?
     queryInput.value = "";
 }
 
 function insertNewLine() {
+    if(disabled) return;
+
     let pos = queryInput.selectionStart;
     let input = queryInput.value;
     let left = input.substr(0, pos);
@@ -65,6 +91,8 @@ function insertNewLine() {
 }
 
 function loadFiles() {
+    if(disabled) return;
+
     let contract = contractEditor.value;
     channel.push("load", {files: [{filename: "contract.aes",
                                    content: contract
@@ -82,7 +110,7 @@ function log_response(msg) {
 }
 
 function update_prompt(prompt) {
-    let prompt_text = prompt + "> ";
+    let prompt_text = prompt;
     currentPrompt.innerText = prompt_text;
     queryInput.placeholder = prompt_text;
 }
@@ -97,10 +125,15 @@ queryInput.addEventListener("keypress", event => {
     }
 });
 
-channel.onError( () => alert("Channel error.") );
+channel.onError( (e) => {
+    console.log("Channel error:", e);
+    update_prompt("(ERROR)");
+    disableInput();
+});
 channel.onClose( () => {
-    update_prompt("(CLOSED)");
-    alert("The channel has been closed. Please refresh to start a new session.");
+    console.log("Channel closed");
+    update_prompt("END");
+    disableInput();
 });
 
 
@@ -109,9 +142,10 @@ channel.join()
         console.log("Joined aerepl lobby.");
         session = resp.user_session;
         console.log("Session: ", session);
-        channel.push("banner", {user_session: session})
+        var t = channel.push("banner", {user_session: session})
             .receive("ok", handle_response);
         console.log("Session established.");
+        enableInput();
 
     })
     .receive("error", resp => {

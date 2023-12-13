@@ -72,7 +72,8 @@ defmodule AereplServer.SessionService do
     session = SessionData.new(client_id)
     repl = repl_ref(session)
     options = %{
-      :filesystem => {:cached, %{}}
+      :filesystem => {:cached, %{}},
+      :return_mode => :render, # TODO this should be not always the case
     }
 
     {:ok, _repl} = :aere_gen_server.start_link(repl, options: options)
@@ -95,10 +96,6 @@ defmodule AereplServer.SessionService do
     case output do
       {:error, e} ->
         throw({:reply, e, session})
-      :ok ->
-        {:reply, "", session}
-      {:ok, msg} ->
-        {:reply, msg, session}
       msg ->
         {:reply, msg, session}
     end
@@ -111,14 +108,19 @@ defmodule AereplServer.SessionService do
     input = String.to_charlist(text)
     output = :aere_gen_server.input(repl, input)
 
-    {:reply, output, session}
+    resp = case output do
+             {:ok, out} -> out
+             {:error, err} -> {:error, err}
+           end
+
+    {:reply, resp, session}
   end
 
   def handle_call(:repl_prompt, _from, session) do
     session = SessionData.touch(session)
     repl = repl_ref(session)
     prompt = :aere_gen_server.prompt(repl)
-    {:reply, List.to_string(prompt), session}
+    {:reply, {:ok, prompt}, session}
   end
 
 
