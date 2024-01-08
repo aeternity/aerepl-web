@@ -1,5 +1,5 @@
 %{
-  "aerepl": {:git, "https://github.com/aeternity/aerepl", "1192f8309b9e0bc4df2acb8d9a8ef18bc1165ba3", [branch: "value-return"]},
+  "aerepl": {:git, "https://github.com/aeternity/aerepl", "5a003d0d28867f487b5ce8fe7a3df7662f914b85", [tag: "v3.2.1"]},
   "bear": {:hex, :bear, "1.0.0", "430419c1126b477686cde843e88ba0f2c7dc5cdf0881c677500074f704339a99", [:rebar3], [], "hexpm", "157b67901adf84ff0da6eae035ca1292a0ac18aa55148154d8c582b2c68959db"},
   "bunt": {:hex, :bunt, "0.2.1", "e2d4792f7bc0ced7583ab54922808919518d0e57ee162901a16a1b6664ef3b14", [:mix], [], "hexpm", "a330bfb4245239787b15005e66ae6845c9cd524a288f0d141c148b02603777a5"},
   "cowboy": {:hex, :cowboy, "2.10.0", "ff9ffeff91dae4ae270dd975642997afe2a1179d94b1887863e43f681a203e26", [:make, :rebar3], [{:cowlib, "2.12.1", [hex: :cowlib, repo: "hexpm", optional: false]}, {:ranch, "1.8.0", [hex: :ranch, repo: "hexpm", optional: false]}], "hexpm", "3afdccb7183cc6f143cb14d3cf51fa00e53db9ec80cdcd525482f5e99bc41d6b"},
