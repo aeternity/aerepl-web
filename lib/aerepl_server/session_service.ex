@@ -70,14 +70,13 @@ defmodule AereplServer.SessionService do
 
   def init(client_id) do
     session = SessionData.new(client_id)
+    repl = repl_ref(session)
+    options = %{
+      :filesystem => {:cached, %{}},
+      :return_mode => :render, # TODO this should be not always the case
+    }
 
-    {:ok, _repl} = :aere_gen_server.start_link(
-      repl_ref(session),
-      options: %{
-        :filesystem => {:cached, %{}}
-      }
-    )
-
+    {:ok, _repl} = :aere_gen_server.start_link(repl, options: options)
     {:ok, session, {:continue, :init}}
   end
 
@@ -86,42 +85,48 @@ defmodule AereplServer.SessionService do
     {:noreply, session}
   end
 
+  def handle_call({:repl, data}, _from, session) do
+    session = SessionData.touch(session)
+
+    repl = repl_ref(session)
+    output = GenServer.call(repl, data)
+
+    case output do
+      {:error, e} ->
+        throw({:reply, e, session})
+      msg ->
+        {:reply, msg, session}
+    end
+  end
 
   def handle_call({:repl_input_text, text}, _from, session) do
+    session = SessionData.touch(session)
     repl = repl_ref(session)
 
     input = String.to_charlist(text)
     output = :aere_gen_server.input(repl, input)
 
-    session = SessionData.touch(session)
-    case output do
-      :no_output ->
-        {:reply, "ok", session}
-      {:ok, msg} ->
-        {:reply, render(msg), session}
-      {:error, e} ->
-        throw({:reply, render(e), session})
-    end
-  end
+    resp = case output do
+             {:ok, out} -> out
+             {:error, err} -> {:error, err}
+           end
 
-  def handle_call({:repl_load_files, filemap}, _from, session) do
-    repl = repl_ref(session)
-    :ok = :aere_gen_server.update_filesystem_cache(repl, filemap)
-    {:reply, "Updated file cache", SessionData.touch(session)}
-  end
-
-  def handle_call(:repl_banner, _from, session) do
-    repl = repl_ref(session)
-    banner = :aere_gen_server.banner(repl)
-    {:reply, List.to_string(banner), SessionData.touch(session)}
+    {:reply, resp, session}
   end
 
   def handle_call(:repl_prompt, _from, session) do
+    session = SessionData.touch(session)
     repl = repl_ref(session)
     prompt = :aere_gen_server.prompt(repl)
-    {:reply, List.to_string(prompt), SessionData.touch(session)}
+    {:reply, {:ok, prompt}, session}
   end
 
+
+  def handle_cast({:repl, data}, session) do
+    repl = repl_ref(session)
+    GenServer.cast(repl, data)
+    {:noreply, session}
+  end
 
   def handle_cast(:timeout_check, session) do
     if SessionData.is_timeout(session) do
@@ -131,7 +136,7 @@ defmodule AereplServer.SessionService do
     end
   end
 
-  def handle_cast({:schedule_timeout_check, client_id}, session) do
+  def handle_cast(:schedule_timeout_check, session) do
     delay = Time.to_seconds_after_midnight(session.timeout) * 1000
 
     spawn_link(fn() ->
@@ -143,37 +148,35 @@ defmodule AereplServer.SessionService do
 
   ### API
 
+  def repl_call(client_id, data) do
+    schedule_timeout_check(client_id)
+    GenServer.call(via(client_id), {:repl, data})
+  end
+
+  def repl_call_render(client_id, data) do
+    schedule_timeout_check(client_id)
+    GenServer.call(via(client_id), {:repl, data})
+  end
+
+  def repl_cast(client_id, data) do
+    schedule_timeout_check(client_id)
+    GenServer.cast(via(client_id), {:repl, data})
+  end
+
   def repl_input_text(client_id, text) do
     schedule_timeout_check(client_id)
     GenServer.call(via(client_id), {:repl_input_text, text})
   end
-
-
-  def repl_load_files(client_id, filemap) do
-    schedule_timeout_check(client_id)
-    GenServer.call(via(client_id), {:repl_load_files, filemap})
-  end
-
-
-  def repl_banner(client_id) do
-    schedule_timeout_check(client_id)
-    GenServer.call(via(client_id), :repl_banner)
-  end
-
 
   def repl_prompt(client_id) do
     schedule_timeout_check(client_id)
     GenServer.call(via(client_id), :repl_prompt)
   end
 
+  ### Internal
+
   def schedule_timeout_check(client_id) do
     GenServer.cast(via(client_id), :timeout_check)
   end
 
-  ### Helpers
-
-  def render(resp) do
-    theme = :aere_theme.default_theme()
-    List.to_string(:aere_theme.render(theme, resp))
-  end
 end

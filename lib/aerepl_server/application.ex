@@ -24,7 +24,7 @@ defmodule AereplServer.Application do
         mod = String.to_atom(Path.rootname(Path.basename(mod_file)))
         if :code.module_status(mod) != :loaded do
           try do
-            :code.load_file(mod)
+            {:module, _} = :code.load_file(mod)
           rescue
             _ in RuntimeError ->
               IO.inspect({:module_not_loaded, mod})
@@ -33,7 +33,9 @@ defmodule AereplServer.Application do
       end
     end
 
+    :ok = Application.load(:aerepl)
     Application.ensure_all_started(:aerepl)
+    :ok = Application.ensure_started(:aerepl)
   end
 
   def start(_type, _args) do
