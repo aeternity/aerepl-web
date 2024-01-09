@@ -60,8 +60,7 @@ WORKDIR /app
 
 ENV MIX_ENV prod
 RUN mkdir -p /etc/profile.d \
-    && KEY_BASE="$(openssl rand -hex 64)" \
-    && echo export SECRET_KEY_BASE=$KEY_BASE >> /etc/profile.d/aerepl-web.sh
+    && bash -l -c 'echo export SECRET_KEY_BASE="$(openssl rand -hex 64)" >> /etc/profile.d/aerepl-web.sh'
 ENV CXXFLAGS "-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"
 
 RUN mix local.rebar --force \
