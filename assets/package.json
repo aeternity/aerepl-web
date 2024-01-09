@@ -20,15 +20,14 @@
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
-    "html-webpack-plugin": "^5.5.4",
+    "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.1",
-    "terser-webpack-plugin": "^5.3.4",
     "webpack": "^5.89.0",
     "webpack-cli": "^4.10.0",
-    "workbox-webpack-plugin": "^6.5.4",
-    "webpack-dev-server": "^4.15.1"
+    "terser-webpack-plugin": "^5.3.4",
+    "workbox-webpack-plugin": "^6.5.4"
   },
   "version": "1.0.0",
-  "description": "REPL-web for Sophia",
-  "name": "aerepl-web"
+  "description": "My webpack project",
+  "name": "my-webpack-project"
 }
