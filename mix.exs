@@ -4,7 +4,7 @@ defmodule AereplServer.MixProject do
   def project do
     [
       app: :aerepl_web,
-      version: "3.1.1",
+      version: "3.2.1",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
@@ -61,11 +61,10 @@ defmodule AereplServer.MixProject do
       {:goldrush, "~> 0.1.9"},
       {:lager, "~> 3.9.2"},
       {:gproc, "~> 0.9.0"},
-      # {:setup, "~> 2.1.0"},
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        ref: "34c7e4f",
+        tag: "v3.2.1",
         app: false,
         compile: "make",
         manager: :make,
