@@ -78,15 +78,18 @@ defmodule AereplServerWeb.ReplSessionChannel do
   end
 
   def handle_in("update_files", %{"files" => files, "user_session" => client_id}, socket) do
+    # TODO: Better validation here
 
     filemap = for %{"filename" => filename, "content" => content} <- files, do:
       {String.to_charlist(filename), content}
 
     AereplServer.SessionService.repl_cast(
       client_id,
-      {:update_filesystem_cache, filemap})
+      {:update_filesystem_cache, filemap}) 
 
-    {:noreply, socket}
+    {:ok, prompt} = AereplServer.SessionService.repl_prompt(client_id)
+
+    {:reply, {:ok, %{"msg" => "Files updated", "prompt" => prompt}}, socket}
   end
 
   def handle_in("skip", %{"user_session" => client_id}, socket) do
