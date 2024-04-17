@@ -61,10 +61,11 @@ defmodule AereplServer.MixProject do
       {:goldrush, "~> 0.1.9"},
       {:lager, "~> 3.9.2"},
       {:gproc, "~> 0.9.0"},
+      {:json, "~> 1.4"},
 
       { :aerepl,
         git: "https://github.com/aeternity/aerepl",
-        tag: "v3.2.1",
+        tag: "v3.3.1",
         app: false,
         compile: "make",
         manager: :make,

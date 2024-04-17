@@ -69,9 +69,9 @@ function submitQuery() {
     messageItem.classList.add("in");
     outputContainer.appendChild(messageItem);
 
-    var t =channel.push("query", {input: query,
-                           user_session: session
-                          })
+    var t = channel.push("query", {input: query,
+                                   render: true,
+                                   user_session: session})
         .receive("ok", handle_response)
         .receive("error", handle_response); // TODO why isn't this working?
     queryInput.value = "";

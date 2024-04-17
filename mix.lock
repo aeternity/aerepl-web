@@ -1,5 +1,5 @@
 %{
-  "aerepl": {:git, "https://github.com/aeternity/aerepl", "5a003d0d28867f487b5ce8fe7a3df7662f914b85", [tag: "v3.2.1"]},
+  "aerepl": {:git, "https://github.com/aeternity/aerepl", "d2f58c3580b8c7f71c7b5e007db34066d2ea3e74", [tag: "v3.3.1"]},
   "bear": {:hex, :bear, "1.0.0", "430419c1126b477686cde843e88ba0f2c7dc5cdf0881c677500074f704339a99", [:rebar3], [], "hexpm", "157b67901adf84ff0da6eae035ca1292a0ac18aa55148154d8c582b2c68959db"},
   "bunt": {:hex, :bunt, "0.2.1", "e2d4792f7bc0ced7583ab54922808919518d0e57ee162901a16a1b6664ef3b14", [:mix], [], "hexpm", "a330bfb4245239787b15005e66ae6845c9cd524a288f0d141c148b02603777a5"},
   "cowboy": {:hex, :cowboy, "2.10.0", "ff9ffeff91dae4ae270dd975642997afe2a1179d94b1887863e43f681a203e26", [:make, :rebar3], [{:cowlib, "2.12.1", [hex: :cowlib, repo: "hexpm", optional: false]}, {:ranch, "1.8.0", [hex: :ranch, repo: "hexpm", optional: false]}], "hexpm", "3afdccb7183cc6f143cb14d3cf51fa00e53db9ec80cdcd525482f5e99bc41d6b"},
@@ -15,6 +15,7 @@
   "hut": {:hex, :hut, "1.3.0", "71f2f054e657c03f959cf1acc43f436ea87580696528ca2a55c8afb1b06c85e7", [:"erlang.mk", :rebar, :rebar3], [], "hexpm", "7e15d28555d8a1f2b5a3a931ec120af0753e4853a4c66053db354f35bf9ab563"},
   "jason": {:hex, :jason, "1.3.0", "fa6b82a934feb176263ad2df0dbd91bf633d4a46ebfdffea0c8ae82953714946", [:mix], [{:decimal, "~> 1.0 or ~> 2.0", [hex: :decimal, repo: "hexpm", optional: true]}], "hexpm", "53fc1f51255390e0ec7e50f9cb41e751c260d065dcba2bf0d08dc51a4002c2ac"},
   "jobs": {:hex, :jobs, "0.10.0", "329c024a889249ea8262d0ef70bc7a498b7c96da95977ebd026b13b069fb0e13", [:rebar3], [{:parse_trans, "3.4.0", [hex: :parse_trans, repo: "hexpm", optional: false]}, {:setup, "2.1.0", [hex: :setup, repo: "hexpm", optional: false]}], "hexpm", "09d486146bd32897726bb1f63dd95d1eb7f6f5a4c21c38ca58ab1646e8229724"},
+  "json": {:hex, :json, "1.4.1", "8648f04a9439765ad449bc56a3ff7d8b11dd44ff08ffcdefc4329f7c93843dfa", [:mix], [], "hexpm", "9abf218dbe4ea4fcb875e087d5f904ef263d012ee5ed21d46e9dbca63f053d16"},
   "lager": {:hex, :lager, "3.9.2", "4cab289120eb24964e3886bd22323cb5fefe4510c076992a23ad18cf85413d8c", [:rebar3], [{:goldrush, "0.1.9", [hex: :goldrush, repo: "hexpm", optional: false]}], "hexpm", "7f904d9e87a8cb7e66156ed31768d1c8e26eba1d54f4bc85b1aa4ac1f6340c28"},
   "mime": {:hex, :mime, "2.0.5", "dc34c8efd439abe6ae0343edbb8556f4d63f178594894720607772a041b04b02", [:mix], [], "hexpm", "da0d64a365c45bc9935cc5c8a7fc5e49a0e0f9932a761c55d6c52b142780a05c"},
   "parse_trans": {:hex, :parse_trans, "3.4.2", "c352ddc1a0d5e54f9b1654d45f9c432eef76f9cea371c55ddff769ef688fdb74", [:rebar3], [], "hexpm", "4c25347de3b7c35732d32e69ab43d1ceee0beae3f3b3ade1b59cbd3dd224d9ca"},
