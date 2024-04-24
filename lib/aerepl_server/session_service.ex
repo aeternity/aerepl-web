@@ -99,7 +99,7 @@ defmodule AereplServer.SessionService do
     end
   end
 
-  def handle_call({:repl_input_text, text}, _from, session) do
+  def handle_call({:repl_input_text, text, render}, _from, session) do
     session = SessionData.touch(session)
     repl = repl_ref(session)
 
@@ -107,9 +107,16 @@ defmodule AereplServer.SessionService do
     output = :aere_gen_server.input(repl, input)
 
     resp = case output do
-             {:ok, out} -> out
-             {:error, err} -> {:error, err}
-           end
+      {:error, err} -> {:error, err}
+      out ->
+        case render do
+          false ->
+            out
+          true ->
+            fmt = :aere_gen_server.format(repl, out)
+            :aere_gen_server.render(repl, fmt)
+        end
+    end
 
     {:reply, resp, session}
   end
@@ -163,9 +170,9 @@ defmodule AereplServer.SessionService do
     GenServer.cast(via(client_id), {:repl, data})
   end
 
-  def repl_input_text(client_id, text) do
+  def repl_input_text(client_id, text, render) do
     schedule_timeout_check(client_id)
-    GenServer.call(via(client_id), {:repl_input_text, text})
+    GenServer.call(via(client_id), {:repl_input_text, text, render})
   end
 
   def repl_prompt(client_id) do

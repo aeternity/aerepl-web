@@ -46,8 +46,8 @@ defmodule AereplServerWeb.ReplSessionChannel do
   end
 
 
-  def handle_in("query", %{"input" => input, "user_session" => client_id}, socket) do
-    output = AereplServer.SessionService.repl_input_text(client_id, input)
+  def handle_in("query", %{"input" => input, "render" => render, "user_session" => client_id}, socket) do
+    output = AereplServer.SessionService.repl_input_text(client_id, input, render)
 
     prompt =
       case output do
@@ -58,8 +58,6 @@ defmodule AereplServerWeb.ReplSessionChannel do
       end
 
     case output do
-      msg when is_binary(msg) ->
-        {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
       {:ok, msg} ->
         {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
       :ok ->
@@ -70,6 +68,16 @@ defmodule AereplServerWeb.ReplSessionChannel do
       {:error, msg} ->
         # TODO This should not return :ok
         {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
+      msg when render ->
+        {:reply, {:ok, %{"msg" => msg, "prompt" => prompt}}, socket}
+      msg ->
+        case JSON.encode(msg) do
+          {:ok, json} ->
+            {:reply, {:ok, %{"msg" => json, "prompt" => prompt}}, socket}
+          _ ->
+            # TODO This should not return :ok
+            {:reply, {:ok, %{"msg" => "Object cannot be encoded in JSON", "prompt" => prompt}}, socket}
+        end
     end
   end
 
