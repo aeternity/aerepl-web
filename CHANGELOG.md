@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/aeternity/aerepl-web/compare/v3.1.1...v4.0.0) (2024-04-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Compatibility with REPL's generic server interface
+
+### Features
+
+* Compatibility with REPL's generic server interface ([bfaf098](https://github.com/aeternity/aerepl-web/commit/bfaf098198016cd47ce44fbd5193111917e712cc))
+
 ## [3.1.1](https://github.com/aeternity/aerepl-web/compare/v3.1.0...v3.1.1) (2023-11-15)
 
 
