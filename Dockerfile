@@ -1,4 +1,4 @@
-FROM aeternity/builder:bionic-otp24 as builder
+FROM aeternity/builder:focal-otp26 as builder
 
 SHELL ["/bin/bash", "-l", "-c"]
 
@@ -33,19 +33,9 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get install nodejs -y
 
-# Install Erlang
-ENV PATH /asdf/bin/:${PATH}
-
-RUN git clone https://github.com/asdf-vm/asdf.git /asdf --branch v0.12.0 \
-    && asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git \
-    && asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
-
-RUN asdf install erlang 25.0 \
-    && asdf global erlang 25.0 \
-    && asdf install elixir 1.15 \
-    && asdf global elixir 1.15
-
-ENV PATH /root/.asdf/installs/elixir/1.15/bin/:/root/.asdf/installs/erlang/25.0/bin/:${PATH}
+RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
+ENV PATH /root/.kiex/bin/:${PATH}
+RUN kiex install 1.16 && kiex use 1.16
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
@@ -64,6 +54,7 @@ RUN mkdir -p /etc/profile.d \
     && echo export SECRET_KEY_BASE=$KEY_BASE >> /etc/profile.d/aerepl-web.sh
 ENV CXXFLAGS "-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"
 
+ENV PATH /root/.kiex/elixirs/elixir-1.16/lib/elixir/bin/:${PATH}
 RUN mix local.rebar --force \
     && mix local.hex --force \
     && mix deps.get
@@ -80,6 +71,21 @@ RUN source /etc/profile.d/aerepl-web.sh \
 WORKDIR /app
 RUN mix phx.digest
 RUN mix release
+
+RUN rm -rf deps/aerepl/_build/default
+RUN rm -rf deps/aerepl/node/_build/default
+RUN rm -rf assets/node_modules/
+
+FROM ubuntu:20.04
+
+RUN apt-get -qq update \
+    && apt-get -qq -y install libssl1.1 libsodium23 \
+    && ldconfig \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app /repl
+
+WORKDIR /repl
 
 CMD _build/prod/rel/app/bin/app start
 
