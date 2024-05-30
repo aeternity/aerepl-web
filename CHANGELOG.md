@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/aeternity/aerepl-web/compare/v4.0.0...v4.0.1) (2024-05-30)
+
+
+### Miscellaneous
+
+* release 4.0.1 ([d8d7a5e](https://github.com/aeternity/aerepl-web/commit/d8d7a5e26aee7229cd8c0c7bebcd9920a6a4c9a2))
+
 ## [4.0.0](https://github.com/aeternity/aerepl-web/compare/v3.1.1...v4.0.0) (2024-04-24)
 
 
