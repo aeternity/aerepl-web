@@ -85,6 +85,13 @@ defmodule AereplServer.SessionService do
     {:noreply, session}
   end
 
+  def handle_call({:repl, :banner}, _from, session) do
+    session = SessionData.touch(session)
+    repl = repl_ref(session)
+    banner = :aere_gen_server.render(repl, :aere_gen_server.banner())
+    {:reply, banner, session}
+  end
+
   def handle_call({:repl, data}, _from, session) do
     session = SessionData.touch(session)
 
