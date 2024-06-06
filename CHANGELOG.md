@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.2](https://github.com/aeternity/aerepl-web/compare/v4.0.1...v4.0.2) (2024-06-06)
+
+
+### Bug Fixes
+
+* The way errors are shown in the interface ([#76](https://github.com/aeternity/aerepl-web/issues/76)) ([120d519](https://github.com/aeternity/aerepl-web/commit/120d519862ad409e6536f5d79b6f567612255d4f))
+
 ## [4.0.1](https://github.com/aeternity/aerepl-web/compare/v4.0.0...v4.0.1) (2024-05-30)
 
 
