@@ -106,16 +106,12 @@ defmodule AereplServer.SessionService do
     input = String.to_charlist(text)
     output = :aere_gen_server.input(repl, input)
 
-    resp = case output do
-      {:error, err} -> {:error, err}
-      out ->
-        case render do
-          false ->
-            out
-          true ->
-            fmt = :aere_gen_server.format(repl, out)
-            :aere_gen_server.render(repl, fmt)
-        end
+    resp = case render do
+      false ->
+        output
+      true ->
+        fmt = :aere_gen_server.format(repl, output)
+        :aere_gen_server.render(repl, fmt)
     end
 
     {:reply, resp, session}
