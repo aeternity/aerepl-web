@@ -75,8 +75,7 @@ defmodule AereplServerWeb.ReplSessionChannel do
           {:ok, json} ->
             {:reply, {:ok, %{"msg" => json, "prompt" => prompt}}, socket}
           _ ->
-            # TODO This should not return :ok
-            {:reply, {:ok, %{"msg" => "Object cannot be encoded in JSON", "prompt" => prompt}}, socket}
+            {:reply, {:error, %{"msg" => "Object cannot be encoded in JSON", "prompt" => prompt}}, socket}
         end
     end
   end
