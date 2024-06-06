@@ -85,6 +85,13 @@ defmodule AereplServer.SessionService do
     {:noreply, session}
   end
 
+  def handle_call({:repl, :banner}, _from, session) do
+    session = SessionData.touch(session)
+    repl = repl_ref(session)
+    banner = :aere_gen_server.render(repl, :aere_gen_server.banner())
+    {:reply, banner, session}
+  end
+
   def handle_call({:repl, data}, _from, session) do
     session = SessionData.touch(session)
 
@@ -106,16 +113,12 @@ defmodule AereplServer.SessionService do
     input = String.to_charlist(text)
     output = :aere_gen_server.input(repl, input)
 
-    resp = case output do
-      {:error, err} -> {:error, err}
-      out ->
-        case render do
-          false ->
-            out
-          true ->
-            fmt = :aere_gen_server.format(repl, out)
-            :aere_gen_server.render(repl, fmt)
-        end
+    resp = case render do
+      false ->
+        output
+      true ->
+        fmt = :aere_gen_server.format(repl, output)
+        :aere_gen_server.render(repl, fmt)
     end
 
     {:reply, resp, session}

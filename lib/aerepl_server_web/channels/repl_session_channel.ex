@@ -26,9 +26,6 @@ defmodule AereplServerWeb.ReplSessionChannel do
     repl_call(client_id, data, socket, fn x -> x end)
   end
   def repl_call(client_id, data, socket, cont) do
-    # TODO: This should return raw data, not rendered.
-    # 1. Change opts return_mode to value
-    # 2. Add feature to call with different opts
     output = SessionService.repl_call(client_id, data)
     {:ok, prompt} = AereplServer.SessionService.repl_prompt(client_id)
     resp = %{"msg" => cont.(output), "prompt" => prompt}
@@ -75,8 +72,7 @@ defmodule AereplServerWeb.ReplSessionChannel do
           {:ok, json} ->
             {:reply, {:ok, %{"msg" => json, "prompt" => prompt}}, socket}
           _ ->
-            # TODO This should not return :ok
-            {:reply, {:ok, %{"msg" => "Object cannot be encoded in JSON", "prompt" => prompt}}, socket}
+            {:reply, {:error, %{"msg" => "Object cannot be encoded in JSON", "prompt" => prompt}}, socket}
         end
     end
   end
