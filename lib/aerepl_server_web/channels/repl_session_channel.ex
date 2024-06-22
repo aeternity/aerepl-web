@@ -22,28 +22,34 @@ defmodule AereplServerWeb.ReplSessionChannel do
     {:ok, resp, socket}
   end
 
-  def repl_call(client_id, data, socket) do
-    repl_call(client_id, data, socket, fn x -> x end)
+  def repl_call(client_id, _render = :false, data, socket) do
+    repl_call(client_id, :false, data, socket, fn x -> x end)
   end
-  def repl_call(client_id, data, socket, cont) do
+
+  def repl_call(client_id, _render = :false, data, socket, cont) do
     output = SessionService.repl_call(client_id, data)
+
     {:ok, prompt} = AereplServer.SessionService.repl_prompt(client_id)
     resp = %{"msg" => cont.(output), "prompt" => prompt}
     {:reply, {:ok, resp}, socket}
   end
 
-  def repl_call_render(client_id, data, socket) do
+  def repl_call(client_id, _render = :true, data, socket) do
     output = SessionService.repl_call_render(client_id, data)
-    {:reply, {:ok, output}, socket}
+    {:ok, prompt} = AereplServer.SessionService.repl_prompt(client_id)
+    resp = %{"msg" => output, "prompt" => prompt}
+    {:reply, {:ok, resp}, socket}
   end
 
+
   def repl_cast(client_id, data, socket) do
-    SessionService.repl_call(client_id, data)
+    SessionService.repl_cast(client_id, data)
     {:noreply, socket}
   end
 
 
   def handle_in("query", %{"input" => input, "render" => render, "user_session" => client_id}, socket) do
+
     output = AereplServer.SessionService.repl_input_text(client_id, input, render)
 
     prompt =
@@ -85,7 +91,7 @@ defmodule AereplServerWeb.ReplSessionChannel do
 
     AereplServer.SessionService.repl_cast(
       client_id,
-      {:update_filesystem_cache, filemap}) 
+      {:update_filesystem_cache, filemap})
 
     {:ok, prompt} = AereplServer.SessionService.repl_prompt(client_id)
 
@@ -95,105 +101,105 @@ defmodule AereplServerWeb.ReplSessionChannel do
   def handle_in("skip", %{"user_session" => client_id}, socket) do
     repl_cast(client_id, :skip, socket)
   end
-  def handle_in("reset", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :reset, socket)
+  def handle_in("reset", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :reset, socket)
   end
 
-  def handle_in("type", %{"user_session" => client_id, "expr" => expr}, socket) do
-    repl_call(client_id, {:type, expr}, socket)
+  def handle_in("type", %{"user_session" => client_id, "render" => render, "expr" => expr}, socket) do
+    repl_call(client_id, render, {:type, expr}, socket)
   end
 
-  def handle_in("state", %{"user_session" => client_id, "expr" => expr}, socket) do
-    repl_call(client_id, {:state, expr}, socket)
+  def handle_in("state", %{"user_session" => client_id, "render" => render, "expr" => expr}, socket) do
+    repl_call(client_id, render, {:state, expr}, socket)
   end
 
-  def handle_in("eval", %{"user_session" => client_id, "expr" => expr}, socket) do
-    repl_call(client_id, {:eval, expr}, socket)
+  def handle_in("eval", %{"user_session" => client_id, "render" => render, "expr" => expr}, socket) do
+    repl_call(client_id, render, {:eval, expr}, socket)
   end
 
-  def handle_in("load", %{"user_session" => client_id, "files" => files}, socket) do
+  def handle_in("load", %{"user_session" => client_id, "render" => render, "files" => files}, socket) do
     files = for file <- files, do: String.to_charlist(file)
-    repl_call(client_id, {:load, files}, socket)
+    repl_call(client_id, render, {:load, files}, socket)
   end
 
-  def handle_in("reload", %{"user_session" => client_id, "files" => files}, socket) do
-    repl_call(client_id, {:reload, files}, socket)
+  def handle_in("reload", %{"user_session" => client_id, "render" => render, "files" => files}, socket) do
+    repl_call(client_id, render, {:reload, files}, socket)
   end
 
   def handle_in("update_filesystem_cache", %{"user_session" => client_id, "files" => files}, socket) do
     repl_cast(client_id, {:update_filesystem_cache, files}, socket)
   end
 
-  def handle_in("set", %{"user_session" => client_id, "option" => option, "value" => value}, socket) do
-    repl_call(client_id, {:set, option, value}, socket)
+  def handle_in("set", %{"user_session" => client_id, "render" => render, "option" => option, "value" => value}, socket) do
+    repl_call(client_id, render, {:set, option, value}, socket)
   end
 
-  def handle_in("help", %{"user_session" => client_id, "command" => command}, socket) do
-    repl_call(client_id, {:help, command}, socket)
+  def handle_in("help", %{"user_session" => client_id, "render" => render, "command" => command}, socket) do
+    repl_call(client_id, render, {:help, command}, socket)
   end
 
-  def handle_in("help", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :help, socket)
+  def handle_in("help", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :help, socket)
   end
 
-  def handle_in("lookup", %{"user_session" => client_id, "what" => what}, socket) do
-    repl_call(client_id, {:lookup, what}, socket)
+  def handle_in("lookup", %{"user_session" => client_id, "render" => render, "what" => what}, socket) do
+    repl_call(client_id, render, {:lookup, what}, socket)
   end
 
-  def handle_in("disas", %{"user_session" => client_id, "ref" => ref}, socket) do
-    repl_call(client_id, {:disas, ref}, socket)
+  def handle_in("disas", %{"user_session" => client_id, "render" => render, "ref" => ref}, socket) do
+    repl_call(client_id, render, {:disas, ref}, socket)
   end
 
-  def handle_in("break", %{"user_session" => client_id, "file" => file, "line" => line}, socket) do
-    repl_call(client_id, {:break, file, line}, socket)
+  def handle_in("break", %{"user_session" => client_id, "render" => render, "file" => file, "line" => line}, socket) do
+    repl_call(client_id, render, {:break, file, line}, socket)
   end
 
-  def handle_in("delete_break", %{"user_session" => client_id, "id" => id}, socket) do
-    repl_call(client_id, {:delete_break, id}, socket)
+  def handle_in("delete_break", %{"user_session" => client_id, "render" => render, "id" => id}, socket) do
+    repl_call(client_id, render, {:delete_break, id}, socket)
   end
 
-  def handle_in("delete_break_loc", %{"user_session" => client_id, "file" => file, "line" => line}, socket) do
-    repl_call(client_id, {:delete_break_loc, file, line}, socket)
+  def handle_in("delete_break_loc", %{"user_session" => client_id, "render" => render, "file" => file, "line" => line}, socket) do
+    repl_call(client_id, render, {:delete_break_loc, file, line}, socket)
   end
 
-  def handle_in("continue", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :continue, socket)
+  def handle_in("continue", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :continue, socket)
   end
 
-  def handle_in("stepover", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :stepover, socket)
+  def handle_in("stepover", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :stepover, socket)
   end
 
-  def handle_in("stepin", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :stepin, socket)
+  def handle_in("stepin", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :stepin, socket)
   end
 
-  def handle_in("stepout", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :stepout, socket)
+  def handle_in("stepout", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :stepout, socket)
   end
 
-  def handle_in("location", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :location, socket)
+  def handle_in("location", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :location, socket)
   end
 
-  def handle_in("print_var", %{"user_session" => client_id, "name" => name}, socket) do
-    repl_call(client_id, {:print_var, name}, socket)
+  def handle_in("print_var", %{"user_session" => client_id, "render" => render, "name" => name}, socket) do
+    repl_call(client_id, render, {:print_var, name}, socket)
   end
 
-  def handle_in("print_vars", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :print_vars, socket)
+  def handle_in("print_vars", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :print_vars, socket)
   end
 
-  def handle_in("stacktrace", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :stacktrace, socket)
+  def handle_in("stacktrace", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :stacktrace, socket)
   end
 
-  def handle_in("version", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :version, socket)
+  def handle_in("version", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :version, socket)
   end
 
-  def handle_in("banner", %{"user_session" => client_id}, socket) do
-    repl_call(client_id, :banner, socket)
+  def handle_in("banner", %{"user_session" => client_id, "render" => render}, socket) do
+    repl_call(client_id, render, :banner, socket)
   end
 
   def handle_in(t, p, socket) do

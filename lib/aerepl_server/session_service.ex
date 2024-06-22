@@ -85,20 +85,29 @@ defmodule AereplServer.SessionService do
     {:noreply, session}
   end
 
-  def handle_call({:repl, :banner}, _from, session) do
+  def handle_call({:repl, :banner, _render = :true}, _from, session) do
     session = SessionData.touch(session)
     repl = repl_ref(session)
     banner = :aere_gen_server.render(repl, :aere_gen_server.banner())
     {:reply, banner, session}
   end
 
-  def handle_call({:repl, data}, _from, session) do
+  def handle_call({:repl, data, render}, _from, session) do
     session = SessionData.touch(session)
 
     repl = repl_ref(session)
     output = GenServer.call(repl, data)
 
-    case output do
+    output_r =
+      case render do
+        false ->
+          output
+        true ->
+          fmt = :aere_gen_server.format(repl, output)
+          :aere_gen_server.render(repl, fmt)
+      end
+
+    case output_r do
       {:error, e} ->
         throw({:reply, e, session})
       msg ->
@@ -138,6 +147,7 @@ defmodule AereplServer.SessionService do
     {:noreply, session}
   end
 
+
   def handle_cast(:timeout_check, session) do
     if SessionData.is_timeout(session) do
       {:stop, {:shutdown, :inactivity}, session}
@@ -160,12 +170,12 @@ defmodule AereplServer.SessionService do
 
   def repl_call(client_id, data) do
     schedule_timeout_check(client_id)
-    GenServer.call(via(client_id), {:repl, data})
+    GenServer.call(via(client_id), {:repl, data, _render = :false})
   end
 
   def repl_call_render(client_id, data) do
     schedule_timeout_check(client_id)
-    GenServer.call(via(client_id), {:repl, data})
+    GenServer.call(via(client_id), {:repl, data, _render = :true})
   end
 
   def repl_cast(client_id, data) do
