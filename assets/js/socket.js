@@ -44,7 +44,7 @@ function disableInput() {
 }
 
 function handle_response(payload) {
-  console.log("Received response.");
+    console.log("Received response.");
     var msg = payload.msg;
     var last_prompt = currentPrompt.innerText;
     var prompt = payload.prompt ? payload.prompt : last_prompt;
@@ -105,7 +105,7 @@ function loadFiles() {
                   user_session: session,
                   render: true
                  })
-    .receive("ok", handle_response);
+        .receive("ok", handle_response);
 }
 
 function log_response(msg) {
@@ -149,7 +149,7 @@ channel.join()
         console.log("Joined aerepl lobby.");
         session = resp.user_session;
         console.log("Session: ", session);
-      var t = channel.push("banner", {user_session: session, render: true})
+        var t = channel.push("banner", {user_session: session, render: true})
             .receive("ok", handle_response);
         console.log("Session established.");
         enableInput();
