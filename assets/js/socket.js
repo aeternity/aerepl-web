@@ -98,11 +98,14 @@ function loadFiles() {
                            content: contract
                           }],
                   user_session: session
-                 });
+                 })
+        .receive("ok", handle_response);
     channel.push("load",
                  {files: ["contract.aes"],
-                  user_session: session
-                 });
+                  user_session: session,
+                  render: true
+                 })
+        .receive("ok", handle_response);
 }
 
 function log_response(msg) {
@@ -146,7 +149,7 @@ channel.join()
         console.log("Joined aerepl lobby.");
         session = resp.user_session;
         console.log("Session: ", session);
-        var t = channel.push("banner", {user_session: session})
+        var t = channel.push("banner", {user_session: session, render: true})
             .receive("ok", handle_response);
         console.log("Session established.");
         enableInput();
