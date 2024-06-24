@@ -15,7 +15,7 @@
     "phoenix_html": "^3.2.0"
   },
   "devDependencies": {
-    "@webpack-cli/generators": "^2.5.0",
+    "@webpack-cli/generators": "^3.0.7",
     "babel": "^6.23.0",
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^11.0.0",
