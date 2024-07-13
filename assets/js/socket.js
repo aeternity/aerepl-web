@@ -2,8 +2,9 @@
 // DON'T JUDGE ME
 
 import {Socket} from "phoenix";
-var AU = require('ansi_up');
-var ansi = new AU.default;
+let AU = require('ansi_up');
+let ansi = new AU.default;
+
 
 var disabled = true;
 var session = null;
@@ -18,12 +19,14 @@ let submitButton        = document.getElementById("submit");
 let contractEditor      = document.getElementById("editor");
 let loadButton          = document.getElementById("load");
 
+
 disableInput();
 
 let socket = new Socket("/socket", {params: {token: window.userToken}});
 socket.connect();
 
-let channel = socket.channel("repl_session:lobby", {});
+let channel = socket.channel("repl_session:lobby", {config: {colors: true}});
+
 
 function enableInput() {
     queryInput.disabled = false;
@@ -34,6 +37,7 @@ function enableInput() {
     disabled = false;
 }
 
+
 function disableInput() {
     queryInput.disabled = true;
     newlineButton.disabled = true;
@@ -43,20 +47,25 @@ function disableInput() {
     disabled = true;
 }
 
+
 function handle_response(payload) {
-    console.log("Received response.");
-    var msg = payload.msg;
-    var last_prompt = currentPrompt.innerText;
-    var prompt = payload.prompt ? payload.prompt : last_prompt;
-    session = payload.user_session ? payload.user_session : session;
-    msg = payload.msg.replace(/^\n|\n$/g, '');
-    if(msg) {
-        log_response(msg);
+    console.log("Received response:", payload.msg);
+
+    if(payload.raw) {
+        console.log("Raw data:", payload.raw);
     }
-    if(prompt) {
-        update_prompt(prompt);
-    }
+
+    var msg = payload.msg || "";
+
+    let last_prompt = currentPrompt.innerText;
+    let prompt = payload.prompt || last_prompt;
+
+    session = payload.user_session || session;
+
+    log_response(msg);
+    update_prompt(prompt);
 }
+
 
 function submitQuery() {
     if(disabled) return;
@@ -67,15 +76,15 @@ function submitQuery() {
     let messageItem = document.createElement("li");
     messageItem.innerText = prompt + query;
     messageItem.classList.add("in");
-    outputContainer.appendChild(messageItem);
 
-    var t = channel.push("query", {input: query,
-                                   render: true,
-                                   user_session: session})
-        .receive("ok", handle_response)
-        .receive("error", handle_response); // TODO why isn't this working?
+    outputContainer.appendChild(messageItem);
     queryInput.value = "";
+
+    channel.push("call_str", {input: query,
+                              user_session: session})
+        .receive("ok", handle_response);
 }
+
 
 function insertNewLine() {
     if(disabled) return;
@@ -84,46 +93,59 @@ function insertNewLine() {
     let input = queryInput.value;
     let left = input.substr(0, pos);
     let right = input.substr(pos, input.length);
+
     input = left + '\n' + right;
     queryInput.value = input;
     queryInput.focus();
 }
 
+
 function loadFiles() {
     if(disabled) return;
 
     let contract = contractEditor.value;
-    channel.push("update_files",
+
+    channel.push("update_filesystem_cache",
                  {files: [{filename: "contract.aes",
                            content: contract
                           }],
                   user_session: session
-                 })
-        .receive("ok", handle_response);
+                 });
+
     channel.push("load",
                  {files: ["contract.aes"],
                   user_session: session,
-                  render: true
                  })
         .receive("ok", handle_response);
 }
 
+
 function log_response(msg) {
+    msg = msg.replace(/^\n|\n$/g, '');
+
+    if(!msg) return;
+
     let messageItem = document.createElement("li");
     let content_str = ansi.ansi_to_html(msg);
+
     messageItem.innerHTML = content_str;
     messageItem.classList.add("out");
     outputContainer.appendChild(messageItem);
 }
 
+
 function update_prompt(prompt) {
     let prompt_text = prompt;
+
     currentPrompt.innerText = prompt_text;
     queryInput.placeholder = prompt_text;
 }
 
+
 newlineButton.addEventListener('click', insertNewLine, false);
+
 submitButton.addEventListener('click', submitQuery, false);
+
 loadButton.addEventListener('click', loadFiles, false);
 
 queryInput.addEventListener("keypress", event => {
@@ -132,11 +154,13 @@ queryInput.addEventListener("keypress", event => {
     }
 });
 
+
 channel.onError( (e) => {
-    console.log("Channel error:", e);
+    console.log("Channel error:", JSON.stringify(e));
     update_prompt("(ERROR)");
     disableInput();
 });
+
 channel.onClose( () => {
     console.log("Channel closed");
     update_prompt("(CLOSED)");
@@ -147,13 +171,23 @@ channel.onClose( () => {
 channel.join()
     .receive("ok", resp => {
         console.log("Joined aerepl lobby.");
+
         session = resp.user_session;
         console.log("Session: ", session);
-        var t = channel.push("banner", {user_session: session, render: true})
-            .receive("ok", handle_response);
+
+        channel.push("banner", {user_session: session})
+            .receive("ok", log_response);
+
+        channel.push("prompt", {user_session: session})
+            .receive("ok", update_prompt);
+
+        channel.push("app_version", {user_session: session})
+            .receive("ok", (vsn) => {
+                console.log("App version:", vsn);
+        });
+
         console.log("Session established.");
         enableInput();
-
     })
     .receive("error", resp => {
         update_prompt("(CHANNEL ERROR)");
