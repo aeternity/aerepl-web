@@ -33,9 +33,9 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get install nodejs -y
 
-RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/19796b5934aa1474034b431220d8b6c66f037d44/kiex | bash -s install_kiex
+RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
 ENV PATH /root/.kiex/bin/:${PATH}
-RUN kiex install 1.16 && kiex use 1.16
+RUN kiex install 1.16 && kiex use 1.16-
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
