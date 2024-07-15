@@ -41,6 +41,7 @@ RUN apt-get update && apt-get install nodejs -y
 
 # Install kiex and Elixir (apt provides an outdated version unfortunately)
 RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
+
 RUN source "$HOME/.kiex/scripts/kiex" \
     && kiex install 1.16
 
