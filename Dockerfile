@@ -54,7 +54,7 @@ RUN mkdir -p /etc/profile.d \
     && echo export SECRET_KEY_BASE=$KEY_BASE >> /etc/profile.d/aerepl-web.sh
 ENV CXXFLAGS "-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"
 
-ENV PATH /root/.kiex/elixirs/elixir-1.16/lib/elixir/bin/:${PATH}
+ENV PATH /root/.kiex/elixirs/elixir-1.16-/lib/elixir/bin/:${PATH}
 RUN mix local.rebar --force \
     && mix local.hex --force \
     && mix deps.get
