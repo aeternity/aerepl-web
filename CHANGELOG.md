@@ -1,5 +1,26 @@
 # Changelog
 
+## [5.0.0](https://github.com/aeternity/aerepl-web/compare/v4.0.2...v5.0.0) (2024-07-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* make update_files synchronous, fix crashes when loading files that don't compile ([#67](https://github.com/aeternity/aerepl-web/issues/67))
+
+### Features
+
+* make update_files synchronous, fix crashes when loading files that don't compile ([#67](https://github.com/aeternity/aerepl-web/issues/67)) ([df2fa09](https://github.com/aeternity/aerepl-web/commit/df2fa09ac0476893e2aecfcbf68719b11b6ff093))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump ejs from 3.1.9 to 3.1.10 in /assets ([#82](https://github.com/aeternity/aerepl-web/issues/82)) ([5bd0078](https://github.com/aeternity/aerepl-web/commit/5bd0078c3a2252ced98260d0f95789d5ddd9148d))
+* **deps-dev:** bump express from 4.18.2 to 4.19.2 in /assets ([#81](https://github.com/aeternity/aerepl-web/issues/81)) ([0d9fc67](https://github.com/aeternity/aerepl-web/commit/0d9fc672740da001879e6976abeed7a924d681f3))
+* **deps-dev:** bump follow-redirects from 1.15.3 to 1.15.6 in /assets ([#78](https://github.com/aeternity/aerepl-web/issues/78)) ([1aa348f](https://github.com/aeternity/aerepl-web/commit/1aa348f34d9e051c5de3b606b7594d84ba5e2e7e))
+* **deps-dev:** bump webpack-dev-middleware in /assets ([#83](https://github.com/aeternity/aerepl-web/issues/83)) ([39c9006](https://github.com/aeternity/aerepl-web/commit/39c9006e2f89bf4d4af09dc5c9fb40497960e651))
+* **deps-dev:** bump ws from 8.15.0 to 8.17.1 in /assets ([#80](https://github.com/aeternity/aerepl-web/issues/80)) ([29322ff](https://github.com/aeternity/aerepl-web/commit/29322ff5418bf101fa51f38131a6ce304271779b))
+* **deps:** bump braces from 3.0.2 to 3.0.3 in /assets ([#79](https://github.com/aeternity/aerepl-web/issues/79)) ([e54deac](https://github.com/aeternity/aerepl-web/commit/e54deac67df0165da47cb778492a09c9ba56633f))
+
 ## [4.0.2](https://github.com/aeternity/aerepl-web/compare/v4.0.1...v4.0.2) (2024-06-06)
 
 
