@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install nodejs -y
 
 RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
 ENV PATH /root/.kiex/bin/:${PATH}
-RUN kiex install v1.16- && kiex use v1.16-
+RUN kiex install 1.16 && kiex use 1.16
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
