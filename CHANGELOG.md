@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/aeternity/aerepl-web/compare/v5.0.0...v5.0.1) (2024-07-27)
+
+
+### Bug Fixes
+
+* how Elixir is installed in the Dockerfile ([#88](https://github.com/aeternity/aerepl-web/issues/88)) ([1d9f72c](https://github.com/aeternity/aerepl-web/commit/1d9f72c292516cf0d4922b494857064ec93865b2))
+
 ## [5.0.0](https://github.com/aeternity/aerepl-web/compare/v4.0.2...v5.0.0) (2024-07-15)
 
 
