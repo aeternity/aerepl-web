@@ -1,10 +1,10 @@
-FROM aeternity/builder:focal-otp26 as builder
+FROM aeternity/builder:focal-otp26 AS builder
 
 SHELL ["/bin/bash", "-l", "-c"]
 
-ENV ERLANG_ROCKSDB_OPTS "-DWITH_SYSTEM_ROCKSDB=ON -DWITH_LZ4=ON -DWITH_SNAPPY=ON -DWITH_BZ2=ON -DWITH_ZSTD=ON"
+ENV ERLANG_ROCKSDB_OPTS="-DWITH_SYSTEM_ROCKSDB=ON -DWITH_LZ4=ON -DWITH_SNAPPY=ON -DWITH_BZ2=ON -DWITH_ZSTD=ON"
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update \
     && apt-get -qq -y install apt-utils git g++ cmake autoconf clang curl wget \
@@ -28,9 +28,9 @@ RUN ln -fs librocksdb.so.6.13.3 /usr/local/lib/librocksdb.so.6.13 \
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 # Install nodejs
 RUN apt-get update && apt-get install -y ca-certificates curl gnupg
@@ -43,19 +43,19 @@ RUN apt-get update && apt-get install nodejs -y
 RUN curl -OL https://github.com/elixir-lang/elixir/releases/download/v1.17.2/elixir-otp-26.zip
 RUN mkdir elixir-otp-26 && unzip elixir-otp-26.zip -d elixir-otp-26
 
-ENV PATH /elixir-otp-26/bin:${PATH}
+ENV PATH=/elixir-otp-26/bin:${PATH}
 
 ADD . /app
 WORKDIR /app
 
 # Setup the server
 
-ENV MIX_ENV prod
+ENV MIX_ENV=prod
 RUN mkdir -p /etc/profile.d \
     && KEY_BASE="$(openssl rand -hex 64)" \
     && echo export SECRET_KEY_BASE=$KEY_BASE >> /etc/profile.d/aerepl-web.sh
 
-ENV CXXFLAGS "-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"
+ENV CXXFLAGS="-Wno-error=shadow -Wno-deprecated-copy -Wno-redundant-move -Wno-pessimizing-move"
 
 RUN mix local.rebar --force \
     && mix local.hex --force \
@@ -90,7 +90,7 @@ COPY --from=builder /app /repl
 
 WORKDIR /repl
 
-CMD _build/prod/rel/app/bin/app start
+CMD ["_build/prod/rel/app/bin/app", "start"]
 
 # Erl handles SIGQUIT instead of the default SIGINT
 STOPSIGNAL SIGQUIT
