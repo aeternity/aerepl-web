@@ -39,15 +39,11 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get install nodejs -y
 
-# Install kiex and Elixir (apt provides an outdated version unfortunately)
-RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
+# Install Elixir
+RUN curl -OL https://github.com/elixir-lang/elixir/releases/download/v1.17.2/elixir-otp-26.zip
+RUN mkdir elixir-otp-26 && unzip elixir-otp-26.zip -d elixir-otp-26
 
-RUN source "$HOME/.kiex/scripts/kiex" \
-    && kiex install 1.16
-
-ENV ELIXIR_VERSION "1.16-"
-ENV PATH /root/.kiex/elixirs/elixir-1.16-/bin:${PATH}
-ENV MIX_ARCHIVES /root/.kiex/mix/archives/elixir-1.16-
+ENV PATH /elixir-otp-26/bin:${PATH}
 
 ADD . /app
 WORKDIR /app
