@@ -41,9 +41,9 @@ RUN apt-get update && apt-get install nodejs -y
 
 # Install Elixir
 RUN curl -OL https://github.com/elixir-lang/elixir/releases/download/v1.17.2/elixir-otp-26.zip
-RUN mkdir elixir-otp-26 && unzip elixir-otp-26.zip -d elixir-otp-26
+RUN mkdir -p /root/elixir-otp-26 && unzip elixir-otp-26.zip -d /root/elixir-otp-26
 
-ENV PATH=/elixir-otp-26/bin:${PATH}
+ENV PATH=/root/elixir-otp-26/bin:${PATH}
 
 ADD . /app
 WORKDIR /app
